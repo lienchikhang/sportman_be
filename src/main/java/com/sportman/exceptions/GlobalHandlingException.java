@@ -56,6 +56,8 @@ public class GlobalHandlingException {
     @ExceptionHandler(value = HttpRequestMethodNotSupportedException.class)
     public ResponseEntity<ApiResponse> handlingMethodNotSupportException(HttpRequestMethodNotSupportedException e) {
 
+        log.info("in HttpRequestMethodNotSupportedException");
+
         ErrorCode errorCode = ErrorCode.BAD_REQUEST;
 
         ApiResponse apiResponse = ApiResponse

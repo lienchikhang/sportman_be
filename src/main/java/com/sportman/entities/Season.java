@@ -23,6 +23,6 @@ public class Season implements Serializable {
 
     @ColumnDefault("false")
     @Column(name = "is_deleted")
-    private Boolean isDeleted;
+    private Boolean isDeleted = false;
 
 }

@@ -17,6 +17,7 @@ import org.springframework.security.web.SecurityFilterChain;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 @Configuration
 @EnableWebSecurity
@@ -37,32 +38,39 @@ public class SecurityConfig {
 
     String[] PUBLIC_GET_ENDPOINTS = {
             "/clubs",
+            "/seasons",
     };
 
     String[] PUBLIC_POST_ENDPOINTS = {
             "/clubs/create",
+            "/seasons/create"
     };
 
     String[] PUBLIC_DELETE_ENDPOINTS = {
             "/clubs/delete/**",
+            "/seasons/delete/**",
     };
 
     String[] PUBLIC_PATCH_ENDPOINTS = {
             "/clubs/update/**",
     };
 
+    String[] PUBLIC_COMBILE_ENDPOINTS = Stream.concat(
+                    Stream.concat(
+                            Stream.concat(Stream.of(PUBLIC_GET_ENDPOINTS), Stream.of(PUBLIC_POST_ENDPOINTS)),
+                            Stream.of(PUBLIC_DELETE_ENDPOINTS)),
+                    Stream.of(PUBLIC_PATCH_ENDPOINTS))
+            .toArray(String[]::new);
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
 
         //config public endpoints
         httpSecurity.authorizeHttpRequests(request -> request
-                                .requestMatchers(HttpMethod.GET, PUBLIC_GET_ENDPOINTS).permitAll()
-                                .requestMatchers(HttpMethod.POST, PUBLIC_POST_ENDPOINTS).permitAll()
-                                .requestMatchers(HttpMethod.DELETE, PUBLIC_DELETE_ENDPOINTS).permitAll()
-                                .requestMatchers(HttpMethod.PATCH, PUBLIC_PATCH_ENDPOINTS).permitAll()
-                                .anyRequest()
-                                .authenticated()
-                        );
+                .requestMatchers(PUBLIC_COMBILE_ENDPOINTS).permitAll()
+                .anyRequest()
+                .authenticated()
+        );
 
         //config protected endpoints
         httpSecurity.oauth2ResourceServer(auth -> auth
