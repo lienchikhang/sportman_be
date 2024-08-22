@@ -2,6 +2,7 @@ package com.sportman.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 import java.io.Serializable;
 
@@ -12,22 +13,22 @@ import java.io.Serializable;
 @Setter
 @Entity
 @Table(name = "CartDetails")
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class CartDetail implements Serializable {
-    private static final long serialVersionUID = 1819782064686949338L;
     @EmbeddedId
-    private CartDetailId id;
+    CartDetailId id;
 
     @MapsId("cartId")
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "cart_id", nullable = false)
-    private Cart cart;
+    Cart cart;
 
     @MapsId("productId")
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "product_id", nullable = false)
-    private Product product;
+    Product product;
 
     @Column(name = "amount")
-    private Integer amount;
+    Integer amount;
 
 }

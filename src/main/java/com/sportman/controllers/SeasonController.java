@@ -3,7 +3,7 @@ package com.sportman.controllers;
 import com.sportman.dto.request.SeasonCreateRequest;
 import com.sportman.dto.response.ApiResponse;
 import com.sportman.dto.response.SeasonResponse;
-import com.sportman.services.SeasonService;
+import com.sportman.services.interfaces.SeasonService;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -18,8 +18,7 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class SeasonController {
 
-    SeasonService service;
-    private final SeasonService seasonService;
+    SeasonService seasonService;
 
     @GetMapping
     public ApiResponse<List<SeasonResponse>> getAll(
@@ -27,7 +26,7 @@ public class SeasonController {
             @RequestParam(defaultValue = "4") int pageSize
     ) {
         return ApiResponse.<List<SeasonResponse>>builder()
-                .content(service.getAll(page, pageSize))
+                .content(seasonService.getAll(page, pageSize))
                 .build();
     }
 

@@ -1,4 +1,4 @@
-package com.sportman.services;
+package com.sportman.services.imlps;
 
 import com.sportman.dto.request.ClubRequest;
 import com.sportman.dto.request.ClubUpdateRequest;
@@ -8,6 +8,7 @@ import com.sportman.exceptions.AppException;
 import com.sportman.exceptions.ErrorCode;
 import com.sportman.mappers.ClubMapper;
 import com.sportman.repositories.ClubRepository;
+import com.sportman.services.interfaces.ClubService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -20,31 +21,22 @@ import java.util.Objects;
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class ClubService {
+public class ClubServiceImpl implements ClubService {
 
     ClubRepository clubRepository;
     ClubMapper clubMapper;
 
-    /**
-     * used to get all clubs
-     * @return List<ClubResponse>
-     */
+    @Override
     public List<ClubResponse> getAll(Pageable pageable) {
         //get clubs
         return clubRepository
                 .findAllByIsDeletedFalse(pageable)
                 .stream()
-//                .filter(club -> !club.getIsDeleted())
                 .map(clubMapper::toClubResponse).toList();
     }
 
-    /**
-     * used to create a club
-     * @param 'ClubRequest'
-     * @return ClubResponse
-     */
+    @Override
     public ClubResponse create(ClubRequest request) {
-
         //check exist
         boolean isExisted = clubRepository.existsById(request.getClubName());
         if (isExisted) throw new AppException(ErrorCode.CLUB_EXISTED);
@@ -56,13 +48,8 @@ public class ClubService {
         return clubMapper.toClubResponse(clubRepository.save(clubMapper.toClub(request)));
     }
 
-    /**
-     * used to delete an existed club
-     * @param clubId
-     * @return
-     */
+    @Override
     public ClubResponse delete(String clubId) {
-
         //check exist
         Club club = clubRepository.findById(clubId).orElseThrow(() -> new AppException(ErrorCode.CLUB_NOT_FOUND));
 
@@ -70,16 +57,10 @@ public class ClubService {
         club.setIsDeleted(true);
 
         return clubMapper.toClubResponse(clubRepository.save(club));
-
     }
 
-    /**
-     * used to update an existed club
-     * @param clubId
-     * @param request
-     */
+    @Override
     public void update(String clubId, ClubUpdateRequest request) {
-
         //check existed club
         Club club = clubRepository.findClubByClubNameAndIsDeletedFalse(clubId.toUpperCase()).orElseThrow(() -> new AppException(ErrorCode.CLUB_NOT_FOUND));
 
@@ -97,6 +78,5 @@ public class ClubService {
         }
 
         clubRepository.save(club);
-
     }
 }

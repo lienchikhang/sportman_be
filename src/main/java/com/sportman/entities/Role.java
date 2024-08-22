@@ -1,14 +1,15 @@
 package com.sportman.entities;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import com.sportman.enums.EnumRole;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 @Builder
 @AllArgsConstructor
@@ -17,16 +18,17 @@ import java.io.Serializable;
 @Setter
 @Entity
 @Table(name = "Roles")
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class Role implements Serializable {
-    private static final long serialVersionUID = -6682011612186970980L;
     @Id
-    @Size(max = 255)
-    @Column(name = "name", nullable = false)
-    private String name;
+    @Column(name = "name", nullable = false, unique = true)
+    @Enumerated(EnumType.STRING)
+    EnumRole name;
 
-    @Size(max = 255)
-    @NotNull
     @Column(name = "role_desc", nullable = false)
-    private String roleDesc;
+    String roleDesc;
+
+    @OneToMany(mappedBy = "role", cascade = CascadeType.ALL)
+    Set<RolePermission> rolePermissions;
 
 }

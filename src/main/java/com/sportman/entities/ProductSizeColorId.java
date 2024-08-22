@@ -5,6 +5,7 @@ import jakarta.persistence.Embeddable;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import lombok.experimental.FieldDefaults;
 import org.hibernate.Hibernate;
 
 import java.io.Serializable;
@@ -16,22 +17,22 @@ import java.util.Objects;
 @Getter
 @Setter
 @Embeddable
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class ProductSizeColorId implements Serializable {
-    private static final long serialVersionUID = -1431123689920017586L;
     @Size(max = 36)
     @NotNull
     @Column(name = "product_id", nullable = false, length = 36)
-    private String productId;
+    String productId;
 
     @Size(max = 6)
     @NotNull
     @Column(name = "color_hex", nullable = false, length = 6)
-    private String colorHex;
+    String colorHex;
 
     @Size(max = 10)
     @NotNull
     @Column(name = "size_tag", nullable = false, length = 10)
-    private String sizeTag;
+    String sizeTag;
 
     @Override
     public boolean equals(Object o) {

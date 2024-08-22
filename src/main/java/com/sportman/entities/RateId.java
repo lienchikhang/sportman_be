@@ -20,12 +20,12 @@ public class RateId implements Serializable {
     private static final long serialVersionUID = -6044100120554083446L;
     @Size(max = 36)
     @NotNull
-    @Column(name = "user_id", nullable = false, length = 36)
+    @Column(name = "user_id", nullable = false, length = 36, unique = true)
     private String userId;
 
     @Size(max = 36)
     @NotNull
-    @Column(name = "product_id", nullable = false, length = 36)
+    @Column(name = "product_id", nullable = false, length = 36, unique = true)
     private String productId;
 
     @Override

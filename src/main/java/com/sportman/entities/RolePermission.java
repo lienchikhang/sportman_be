@@ -2,6 +2,7 @@ package com.sportman.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 import java.io.Serializable;
 
@@ -12,19 +13,19 @@ import java.io.Serializable;
 @Setter
 @Entity
 @Table(name = "role_permission")
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class RolePermission implements Serializable {
-    private static final long serialVersionUID = -5005332616822472631L;
     @EmbeddedId
-    private RolePermissionId id;
+    RolePermissionId id;
 
     @MapsId("roleName")
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "role_name", nullable = false)
-    private Role roleName;
+    Role role;
 
     @MapsId("perName")
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "per_name", nullable = false)
-    private Permission perName;
+    Permission permission;
 
 }

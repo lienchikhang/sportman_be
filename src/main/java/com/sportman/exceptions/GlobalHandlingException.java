@@ -30,7 +30,7 @@ public class GlobalHandlingException {
         ApiResponse apiResponse = ApiResponse
                 .builder()
                 .statusCode(errorCode.getCode())
-                .msg(errorCode.getMsg())
+                .msg(e.getMessage())
                 .build();
 
         return ResponseEntity.status(500).body(apiResponse);
@@ -78,7 +78,11 @@ public class GlobalHandlingException {
         Map<String, Object> attributes = null;
 
         //get all error messages
-        errorCode = ErrorCode.valueOf(e.getBindingResult().getFieldError().getDefaultMessage());
+        try {
+            errorCode = ErrorCode.valueOf(e.getBindingResult().getFieldError().getDefaultMessage());
+        } catch (Exception exception) {
+
+        }
 
 //
 //        try {

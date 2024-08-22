@@ -32,6 +32,27 @@ public enum ErrorCode {
     SEASON_END_START_NOT_NULL(1010, "Season year end must not be null", 400),
     SEASON_YEAR_INVALID(1011, "Season year is invalid", 400),
     SEASON_EXISTED(1012, "Season has already existed", 400),
+
+
+    //user
+    USER_EXISTED(1013, "Username or Email has already existed", 400),
+    USER_NOT_FOUND(1014, "User not found", 404),
+    PASSWORD_INVALID(1015, "Password must have at least 6 characters", 400),
+    EMAIL_INVALID(1015, "Email is invalid", 400),
+    USERNAME_INVALID(1019, "Username must have at least 8 characters", 400),
+
+
+    //role
+    ROLE_EXISTED(1016, "Role has already existed", 400),
+    ROLE_NOT_FOUND(1017, "Role not found", 404),
+    ROLE_INVALID(1018, "Role is invalid", 400),
+
+    //permission
+    PERMISSION_EXISTED(1016, "Permission has already existed", 400),
+    PERMISSION_EXISTED_NOT_FOUND(1017, "Permission not found", 404),
+    PERMISSION_EXISTED_INVALID(1018, "Permission is invalid", 400),
+    PER_NAME_NOT_EMPTY(1018, "Permission's name must not be empty", 400),
+    PER_DESC_NOT_EMPTY(1018, "Permission's desc must not be empty", 400),
     ;
 
     int code;

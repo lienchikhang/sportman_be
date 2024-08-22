@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -23,51 +24,45 @@ import java.util.stream.Stream;
 @EnableWebSecurity
 @EnableMethodSecurity
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class SecurityConfig {
 
-    CustomJwtDecoder customJwtDecoder;
+    @Autowired
+    private CustomJwtDecoder customJwtDecoder;
 
-    String[] PUBLIC_ENDPOINTS = {
-            "/users",
-            "/auth/login",
-            "/auth/introspect-token",
-            "/auth/logout",
-            "/auth/refresh"
-    };
-
-    String[] PUBLIC_GET_ENDPOINTS = {
+    private String[] PUBLIC_ENDPOINTS = {
+            //GET
             "/clubs",
             "/seasons",
-    };
+            "/roles",
+            "/permissions",
 
-    String[] PUBLIC_POST_ENDPOINTS = {
+            //POST
             "/clubs/create",
-            "/seasons/create"
-    };
+            "/seasons/create",
+            "/roles/create",
+            "/permissions/create",
+            "auth/register",
+            "auth/introspect-token",
+            "auth/logout",
 
-    String[] PUBLIC_DELETE_ENDPOINTS = {
+            //PATCH
+            "/clubs/update/**",
+
+            //DELETE
             "/clubs/delete/**",
             "/seasons/delete/**",
+            "/roles/delete/**",
+            "/permissions/delete/**",
     };
 
-    String[] PUBLIC_PATCH_ENDPOINTS = {
-            "/clubs/update/**",
-    };
 
-    String[] PUBLIC_COMBILE_ENDPOINTS = Stream.concat(
-                    Stream.concat(
-                            Stream.concat(Stream.of(PUBLIC_GET_ENDPOINTS), Stream.of(PUBLIC_POST_ENDPOINTS)),
-                            Stream.of(PUBLIC_DELETE_ENDPOINTS)),
-                    Stream.of(PUBLIC_PATCH_ENDPOINTS))
-            .toArray(String[]::new);
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
 
         //config public endpoints
         httpSecurity.authorizeHttpRequests(request -> request
-                .requestMatchers(PUBLIC_COMBILE_ENDPOINTS).permitAll()
+                .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
                 .anyRequest()
                 .authenticated()
         );

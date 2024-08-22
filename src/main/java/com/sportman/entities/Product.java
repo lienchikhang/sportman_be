@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.ColumnDefault;
 
 import java.io.Serializable;
@@ -16,50 +17,42 @@ import java.time.LocalDate;
 @Setter
 @Entity
 @Table(name = "Products")
-public class Product implements Serializable {
-    private static final long serialVersionUID = -1602042705427065461L;
+@FieldDefaults(level = AccessLevel.PRIVATE)
+public class Product extends AbstractEntity implements Serializable {
     @Id
-    @Size(max = 36)
-    @ColumnDefault("(uuid())")
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id", nullable = false, length = 36)
-    private String id;
+    String id;
 
     @Size(max = 255)
     @NotNull
-    @Column(name = "product_name", nullable = false)
-    private String productName;
+    @Column(name = "product_name", nullable = false, unique = true)
+    String productName;
 
     @NotNull
     @Lob
     @Column(name = "product_desc", nullable = false)
-    private String productDesc;
+    String productDesc;
 
     @NotNull
     @Column(name = "product_price", nullable = false)
-    private Integer productPrice;
+    Integer productPrice;
 
     @NotNull
     @Lob
     @Column(name = "front_image", nullable = false)
-    private String frontImage;
+    String frontImage;
 
     @NotNull
     @Lob
     @Column(name = "back_image", nullable = false)
-    private String backImage;
-
-    @ColumnDefault("false")
-    @Column(name = "is_deleted")
-    private Boolean isDeleted;
-
-    @Column(name = "created_at")
-    private LocalDate createdAt;
+    String backImage;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private Season seasons;
+    Season seasons;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "club_name")
-    private Club clubName;
+    Club clubName;
 
 }

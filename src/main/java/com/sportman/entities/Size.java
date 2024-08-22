@@ -5,6 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.*;
+import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.ColumnDefault;
 
 import java.io.Serializable;
@@ -16,15 +17,15 @@ import java.io.Serializable;
 @Setter
 @Entity
 @Table(name = "Sizes")
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class Size implements Serializable {
-    private static final long serialVersionUID = -3048298479601854048L;
     @Id
     @jakarta.validation.constraints.Size(max = 10)
-    @Column(name = "size_tag", nullable = false, length = 10)
-    private String sizeTag;
+    @Column(name = "size_tag", nullable = false, length = 10, unique = true)
+    String sizeTag;
 
-    @ColumnDefault("false")
+    @ColumnDefault("0")
     @Column(name = "is_deleted")
-    private Boolean isDeleted;
+    Boolean isDeleted;
 
 }

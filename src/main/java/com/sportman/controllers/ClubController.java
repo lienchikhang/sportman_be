@@ -5,7 +5,7 @@ import com.sportman.dto.request.ClubUpdateRequest;
 import com.sportman.dto.response.ApiResponse;
 import com.sportman.dto.response.ClubResponse;
 import com.sportman.entities.Club;
-import com.sportman.services.ClubService;
+import com.sportman.services.interfaces.ClubService;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;

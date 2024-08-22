@@ -5,6 +5,7 @@ import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.*;
+import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.ColumnDefault;
 
 import java.io.Serializable;
@@ -16,13 +17,13 @@ import java.io.Serializable;
 @Setter
 @Entity
 @Table(name = "Seasons")
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class Season implements Serializable {
-    private static final long serialVersionUID = -5878739877429404862L;
     @EmbeddedId
-    private SeasonId id;
+    SeasonId id;
 
     @ColumnDefault("false")
     @Column(name = "is_deleted")
-    private Boolean isDeleted = false;
+    Boolean isDeleted = false;
 
 }

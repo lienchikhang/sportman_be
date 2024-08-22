@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -16,14 +17,13 @@ import java.time.LocalDate;
 @Entity
 @Table(name = "Carts")
 public class Cart implements Serializable {
-    private static final long serialVersionUID = 4137759815679185340L;
     @Id
-    @Size(max = 36)
-    @ColumnDefault("(uuid())")
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id", nullable = false, length = 36)
     private String id;
 
     @Column(name = "created_at")
+    @CreationTimestamp
     private LocalDate createdAt;
 
     @ManyToOne(fetch = FetchType.LAZY)

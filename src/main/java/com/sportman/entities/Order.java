@@ -3,6 +3,7 @@ package com.sportman.entities;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.ColumnDefault;
 
 import java.io.Serializable;
@@ -15,27 +16,26 @@ import java.time.LocalDate;
 @Setter
 @Entity
 @Table(name = "Orders")
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class Order implements Serializable {
-    private static final long serialVersionUID = -299071375338755741L;
     @Id
-    @Size(max = 36)
-    @ColumnDefault("(uuid())")
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id", nullable = false, length = 36)
-    private String id;
+    String id;
 
     @Column(name = "created_at")
-    private LocalDate createdAt;
+    LocalDate createdAt;
 
     @ColumnDefault("0")
     @Column(name = "is_paid")
-    private Boolean isPaid;
+    Boolean isPaid;
 
     @ColumnDefault("0")
     @Column(name = "is_delivered")
-    private Boolean isDelivered;
+    Boolean isDelivered;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private User user;
+    User user;
 
 }
