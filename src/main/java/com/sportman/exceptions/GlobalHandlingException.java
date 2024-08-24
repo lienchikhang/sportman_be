@@ -4,6 +4,9 @@ import com.sportman.dto.response.ApiResponse;
 import jakarta.validation.ConstraintViolation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authorization.AuthorizationDeniedException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -104,5 +107,21 @@ public class GlobalHandlingException {
         return ResponseEntity.status(400).body(apiResponse);
     }
 
+    @ExceptionHandler(value = AuthorizationDeniedException.class)
+    public ResponseEntity<ApiResponse> handlingAuthorizationDenied(AuthorizationDeniedException e) {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        authentication.getAuthorities().forEach(author -> log.info(author.getAuthority()));
+
+        ApiResponse apiResponse = ApiResponse
+                .builder()
+                .statusCode(403)
+                .msg("UnAuthorized")
+                .build();
+
+        return ResponseEntity.status(403).body(apiResponse);
+
+    }
 
 }

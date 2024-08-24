@@ -14,6 +14,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
 
 import java.util.ArrayList;
@@ -33,26 +35,21 @@ public class SecurityConfig {
             //GET
             "/clubs",
             "/seasons",
-            "/roles",
-            "/permissions",
 
             //POST
-            "/clubs/create",
-            "/seasons/create",
-            "/roles/create",
-            "/permissions/create",
-            "auth/register",
-            "auth/introspect-token",
-            "auth/logout",
+            "/auth/register",
+            "/auth/login",
+            "/auth/introspect-token",
+            "/auth/logout",
 
             //PATCH
             "/clubs/update/**",
 
             //DELETE
-            "/clubs/delete/**",
-            "/seasons/delete/**",
-            "/roles/delete/**",
-            "/permissions/delete/**",
+//            "/clubs/delete/**",
+//            "/seasons/delete/**",
+//            "/roles/delete/**",
+//            "/permissions/delete/**",
     };
 
 
@@ -72,6 +69,7 @@ public class SecurityConfig {
                 //authenticate
                 .jwt(jwtConfigurer -> jwtConfigurer
                         .decoder(customJwtDecoder)
+                        .jwtAuthenticationConverter(jwtAuthenticationConverter())
                 )
                 .authenticationEntryPoint(new JwtHandlingEntryPoint())
         );
@@ -87,6 +85,17 @@ public class SecurityConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(10);
+    }
+
+    @Bean
+    public JwtAuthenticationConverter jwtAuthenticationConverter() {
+        JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
+        jwtGrantedAuthoritiesConverter.setAuthorityPrefix("");
+
+        JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
+        jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthoritiesConverter);
+
+        return jwtAuthenticationConverter;
     }
 
 }

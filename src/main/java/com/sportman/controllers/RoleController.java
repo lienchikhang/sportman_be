@@ -1,8 +1,10 @@
 package com.sportman.controllers;
 
 import com.sportman.dto.request.RoleRequest;
+import com.sportman.dto.request.RoleUpdatingRequest;
 import com.sportman.dto.response.ApiResponse;
 import com.sportman.dto.response.RoleResponse;
+import com.sportman.enums.EnumRole;
 import com.sportman.services.interfaces.RoleService;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
@@ -45,6 +47,19 @@ public class RoleController {
         return ApiResponse.<RoleResponse>builder()
                 .statusCode(200)
                 .content(roleService.create(request))
+                .build();
+    }
+
+    @PatchMapping("/update/{roleId}")
+    public ApiResponse<Void> update(
+            @PathVariable("roleId") EnumRole roleId,
+            @RequestBody @Valid RoleUpdatingRequest request
+    ) {
+
+        roleService.updateRole(roleId, request);
+
+        return ApiResponse.<Void>builder()
+                .statusCode(200)
                 .build();
     }
 

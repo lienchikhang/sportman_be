@@ -40,6 +40,9 @@ public enum ErrorCode {
     PASSWORD_INVALID(1015, "Password must have at least 6 characters", 400),
     EMAIL_INVALID(1015, "Email is invalid", 400),
     USERNAME_INVALID(1019, "Username must have at least 8 characters", 400),
+    USERNAME_NOT_EMPTY(1020, "Username must not be empty", 400),
+    PASSWORD_NOT_EMPTY(1020, "Password must not be empty", 400),
+    USER_INVALID(1021, "Username or password is not correct", 400),
 
 
     //role

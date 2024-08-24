@@ -5,6 +5,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.io.Serializable;
+import java.util.UUID;
 
 @Builder
 @AllArgsConstructor
@@ -14,16 +15,16 @@ import java.io.Serializable;
 @Entity
 @Table(name = "user_role")
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class UserRole implements Serializable {
-    @EmbeddedId
-    UserRoleId id;
+public class UserRole {
 
-    @MapsId("roleName")
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    String id;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "role_name", nullable = false)
-    Role roleName;
+    Role role;
 
-    @MapsId("userId")
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false)
     User user;

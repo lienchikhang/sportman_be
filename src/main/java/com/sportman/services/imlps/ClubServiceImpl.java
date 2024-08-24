@@ -13,6 +13,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -36,6 +37,7 @@ public class ClubServiceImpl implements ClubService {
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public ClubResponse create(ClubRequest request) {
         //check exist
         boolean isExisted = clubRepository.existsById(request.getClubName());

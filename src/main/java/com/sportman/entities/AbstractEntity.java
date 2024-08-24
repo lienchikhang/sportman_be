@@ -5,23 +5,25 @@ import jakarta.persistence.MappedSuperclass;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDate;
 
-@Data
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@Getter
+@Setter
 @MappedSuperclass
 public abstract class AbstractEntity {
 
-    @ColumnDefault("0")
-    @Column(name = "is_deleted")
+//    @ColumnDefault("false")
+//    @Column(name = "is_deleted")
     Boolean isDeleted;
 
-    @NotNull
-    @Column(name = "created_at")
+//    @NotNull
+//    @Column(name = "created_at")
     @CreationTimestamp
     LocalDate createdAt;
 

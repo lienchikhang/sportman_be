@@ -51,6 +51,7 @@ public class User extends AbstractEntity implements Serializable {
     @Column(name = "password", nullable = false)
     String password;
 
+
     @Column(name = "dob", nullable = true)
     LocalDate dob;
 
@@ -58,6 +59,7 @@ public class User extends AbstractEntity implements Serializable {
     @Column(name = "avatar")
     String avatar;
 
+    @ColumnDefault("0")
     @Column(name = "balance")
     Integer balance;
 
@@ -65,7 +67,7 @@ public class User extends AbstractEntity implements Serializable {
     @Column(name = "app_third_party_id")
     String appThirdPartyId;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.PERSIST)
     Set<UserRole> userRole = new HashSet<>();
 
 }
