@@ -1,5 +1,8 @@
 package com.sportman.configurations;
 
+import com.sportman.dto.request.AuthIntrospectRequest;
+import com.sportman.dto.response.AuthIntrospectResponse;
+import com.sportman.services.interfaces.AuthService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -19,12 +22,21 @@ import javax.crypto.spec.SecretKeySpec;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CustomJwtDecoder implements JwtDecoder {
 
+    AuthService authService;
+
     @NonFinal
     @Value("${jwt.secretkey}")
     String secretKey;
 
     @Override
     public Jwt decode(String token) throws JwtException {
+
+        try {
+            AuthIntrospectResponse res = authService.introspectToken(AuthIntrospectRequest.builder().token(token).build());
+            if (!res.isAuth()) throw new JwtException("Token is invalid");
+        } catch (JwtException e) {
+            throw new JwtException(e.getMessage());
+        }
 
         SecretKeySpec secretKeySpec = new SecretKeySpec(secretKey.getBytes(),"HS512");
 

@@ -16,6 +16,8 @@ public enum ErrorCode {
     UN_AUTHENTICATED(1001, "unAuthenticated", 401),
     UN_AUTHORIZED(1002, "unAuthorized", 403),
     BAD_REQUEST(1004, "Bad request", 400),
+    WRONG_TOKEN(1022, "Token type invalid", 400),
+    TOKEN_NOT_EMPTY(1023, "Token must not be empty", 400),
 
     //club
     CLUB_EXISTED(1003, "Club has already existed", 400),

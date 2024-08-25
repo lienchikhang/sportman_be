@@ -1,21 +1,24 @@
 package com.sportman.services.interfaces;
 
+import com.nimbusds.jose.JOSEException;
+import com.sportman.dto.request.AuthIntrospectRequest;
 import com.sportman.dto.request.AuthLoginRequest;
+import com.sportman.dto.request.AuthLogoutRequest;
 import com.sportman.dto.request.AuthRequest;
+import com.sportman.dto.response.AuthIntrospectResponse;
 import com.sportman.dto.response.AuthLoginResponse;
+import com.sportman.dto.response.AuthRefreshResponse;
 import com.sportman.dto.response.AuthResponse;
+
+import java.text.ParseException;
 
 public interface AuthService {
 
-    public AuthResponse register(AuthRequest request);
-
     public AuthLoginResponse logIn(AuthLoginRequest request);
 
-    public Object introspectToken(Object request);
+    public AuthIntrospectResponse introspectToken(AuthIntrospectRequest request);
 
-    public Object logOut();
+    public void logOut(AuthLogoutRequest request) throws JOSEException, ParseException;
 
-    private String createToken(Object user) {
-        return null;
-    }
+    public AuthRefreshResponse refresh(AuthIntrospectRequest request) throws JOSEException, ParseException;
 }
