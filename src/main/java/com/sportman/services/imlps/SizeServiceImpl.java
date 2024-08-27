@@ -13,6 +13,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -29,6 +30,7 @@ public class SizeServiceImpl implements SizeService {
      * @Author Lien Chi khang
      */
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public SizeCreateResponse create(SizeCreateRequest request) {
 
         //check size exist
@@ -58,6 +60,7 @@ public class SizeServiceImpl implements SizeService {
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public void delete(String sizeId) {
         //check size exist
         Size size = sizeRepository.findById(sizeId.toUpperCase()).orElseThrow(() -> new AppException(ErrorCode.SIZE_NOT_FOUND));

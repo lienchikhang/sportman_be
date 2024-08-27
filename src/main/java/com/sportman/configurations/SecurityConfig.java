@@ -30,12 +30,15 @@ import java.util.stream.Stream;
 public class SecurityConfig {
 
     @Autowired
+    @NonFinal
     private CustomJwtDecoder customJwtDecoder;
 
     private String[] PUBLIC_ENDPOINTS = {
             //GET
             "/clubs",
             "/seasons",
+            "/sizes",
+            "/colors",
 
             //POST
             "/users/create",

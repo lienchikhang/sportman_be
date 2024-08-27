@@ -19,14 +19,13 @@ import java.io.Serializable;
 @Entity
 @Table(name = "Colors")
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Color implements Serializable {
-    private static final long serialVersionUID = 4473725630148209415L;
+public class Color {
     @Id
-    @Size(max = 6)
-    @Column(name = "color_hex", nullable = false, length = 6)
+    @Size(max = 7)
+    @Column(name = "color_hex", nullable = false, length = 7)
     String colorHex;
 
-    @ColumnDefault("false")
+    @ColumnDefault("0")
     @Column(name = "is_deleted")
     Boolean isDeleted;
 

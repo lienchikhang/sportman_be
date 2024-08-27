@@ -38,7 +38,7 @@ public enum ErrorCode {
 
     //user
     USER_EXISTED(1013, "Username or Email has already existed", 400),
-    USER_NOT_FOUND(1014, "User not found", 404),
+    USER_NOT_FOUND(1014, "Username or password is not correct", 404),
     PASSWORD_INVALID(1015, "Password must have at least 6 characters", 400),
     EMAIL_INVALID(1015, "Email is invalid", 400),
     USERNAME_INVALID(1019, "Username must have at least 8 characters", 400),
@@ -60,11 +60,18 @@ public enum ErrorCode {
     PER_DESC_NOT_EMPTY(1018, "Permission's desc must not be empty", 400),
 
 
-    //permission
+    //size
     SIZE_EXISTED(1016, "Size has already existed", 400),
     SIZE_NOT_FOUND(1017, "Size not found", 404),
     SIZE_NOT_EMPTY(1018, "Size must not be empty", 400),
-    SIZE_OVER_LENGTH(1018, "Size must have between 1 and 10 characters desc", 400),
+    SIZE_OVER_LENGTH(1018, "Size must have between 1 and 10 characters", 400),
+
+    //color
+    COLOR_EXISTED(1016, "Color has already existed", 400),
+    COLOR_NOT_FOUND(1017, "Color not found", 404),
+    COLOR_NOT_EMPTY(1018, "Color must not be empty", 400),
+    COLOR_OVER_BOUNCE(1018, "Color must have 7 characters", 400),
+
 
     ;
 
