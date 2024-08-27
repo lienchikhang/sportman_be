@@ -44,13 +44,14 @@ public class ClubServiceImpl implements ClubService {
         if (isExisted) throw new AppException(ErrorCode.CLUB_EXISTED);
 
         //create new club
-        request.setClubName(request.getClubName().toUpperCase());
-        request.setShortName(request.getShortName().toUpperCase());
+        request.setClubName(request.getClubName().trim().toUpperCase().replaceAll(" ", "-"));
+        request.setShortName(request.getShortName().trim().toUpperCase());
         request.setColorHex(request.getColorHex().toUpperCase());
         return clubMapper.toClubResponse(clubRepository.save(clubMapper.toClub(request)));
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public ClubResponse delete(String clubId) {
         //check exist
         Club club = clubRepository.findById(clubId).orElseThrow(() -> new AppException(ErrorCode.CLUB_NOT_FOUND));
@@ -62,6 +63,7 @@ public class ClubServiceImpl implements ClubService {
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public void update(String clubId, ClubUpdateRequest request) {
         //check existed club
         Club club = clubRepository.findClubByClubNameAndIsDeletedFalse(clubId.toUpperCase()).orElseThrow(() -> new AppException(ErrorCode.CLUB_NOT_FOUND));

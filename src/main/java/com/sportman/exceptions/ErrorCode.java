@@ -58,6 +58,14 @@ public enum ErrorCode {
     PERMISSION_EXISTED_INVALID(1018, "Permission is invalid", 400),
     PER_NAME_NOT_EMPTY(1018, "Permission's name must not be empty", 400),
     PER_DESC_NOT_EMPTY(1018, "Permission's desc must not be empty", 400),
+
+
+    //permission
+    SIZE_EXISTED(1016, "Size has already existed", 400),
+    SIZE_NOT_FOUND(1017, "Size not found", 404),
+    SIZE_NOT_EMPTY(1018, "Size must not be empty", 400),
+    SIZE_OVER_LENGTH(1018, "Size must have between 1 and 10 characters desc", 400),
+
     ;
 
     int code;
