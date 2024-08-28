@@ -1,9 +1,6 @@
 package com.sportman.entities;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -29,4 +26,7 @@ public class Color {
     @Column(name = "is_deleted")
     Boolean isDeleted;
 
+    @ManyToOne
+    @JoinColumn(name = "id")
+    Product product;
 }

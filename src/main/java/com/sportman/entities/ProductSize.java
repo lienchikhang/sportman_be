@@ -12,25 +12,22 @@ import java.io.Serializable;
 @Getter
 @Setter
 @Entity
-@Table(name = "product_size_color")
+@Table(name = "product_size")
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ProductSizeColor implements Serializable {
+public class ProductSize {
     @EmbeddedId
-    ProductSizeColorId id;
+    ProductSizeId id;
 
     @MapsId("productId")
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "product_id", nullable = false)
     Product product;
 
-    @MapsId("colorHex")
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "color_hex", nullable = false)
-    Color colorHex;
-
     @MapsId("sizeTag")
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "size_tag", nullable = false)
     Size sizeTag;
 
+    @Column(name = "stock", nullable = false)
+    Integer stock;
 }

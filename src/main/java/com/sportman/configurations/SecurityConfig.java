@@ -39,6 +39,7 @@ public class SecurityConfig {
             "/seasons",
             "/sizes",
             "/colors",
+            "/products",
 
             //POST
             "/users/create",
@@ -46,6 +47,7 @@ public class SecurityConfig {
             "/auth/introspect-token",
             "/auth/logout",
             "/auth/refresh",
+            "/auth/register",
 
     };
 

@@ -9,6 +9,7 @@ import org.hibernate.annotations.ColumnDefault;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.List;
 
 @Builder
 @AllArgsConstructor
@@ -40,19 +41,25 @@ public class Product extends AbstractEntity implements Serializable {
 
     @NotNull
     @Lob
-    @Column(name = "front_image", nullable = false)
+    @Column(name = "front_image", nullable = true)
     String frontImage;
 
     @NotNull
     @Lob
-    @Column(name = "back_image", nullable = false)
+    @Column(name = "back_image", nullable = true)
     String backImage;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    Season seasons;
+    Season season;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "club_name")
-    Club clubName;
+    Club club;
+
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    List<ProductSize> stocks;
+
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    List<Color> colors;
 
 }

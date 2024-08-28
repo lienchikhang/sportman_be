@@ -18,7 +18,7 @@ import java.io.Serializable;
 @Entity
 @Table(name = "Sizes")
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Size implements Serializable {
+public class Size {
     @Id
     @jakarta.validation.constraints.Size(max = 10)
     @Column(name = "size_tag", nullable = false, length = 10, unique = true)

@@ -9,7 +9,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface SizeRepository extends CrudRepository<Size, String> {
+public interface SizeRepository extends JpaRepository<Size, String> {
 
     public Page<Size> findAllByIsDeletedFalse(Pageable pageable);
 

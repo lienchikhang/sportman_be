@@ -4,10 +4,12 @@ import com.sportman.dto.request.AuthRequest;
 import com.sportman.dto.response.ApiResponse;
 import com.sportman.dto.response.AuthResponse;
 import com.sportman.services.interfaces.UserService;
+import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -20,7 +22,7 @@ public class UserController {
     UserService userService;
 
     @PostMapping("/create")
-    public ApiResponse<AuthResponse> create(AuthRequest request) {
+    public ApiResponse<AuthResponse> create(@RequestBody @Valid AuthRequest request) {
         return ApiResponse.<AuthResponse>builder().content(userService.create(request)).build();
     }
 

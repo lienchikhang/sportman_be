@@ -22,7 +22,7 @@ public enum ErrorCode {
     //club
     CLUB_EXISTED(1003, "Club has already existed", 400),
     CLUB_NOT_FOUND(1003, "Club not found", 404),
-    CLUB_NAME_NOT_NULL(1005, "Club name must not be null", 400),
+    CLUB_NAME_NOT_NULL(1005, "Club name must not be empty", 400),
     CLUB_COLOR_HEX_NOT_NULL(1005, "Club color hex must not be null", 400),
     CLUB_SHORT_NAME_NOT_NULL(1006, "Club short name must not be null", 400),
     CLUB_COLOR_HEX_OVER_BOUNCE(1007, "Club color hex must be 7 characters", 400),
@@ -72,7 +72,19 @@ public enum ErrorCode {
     COLOR_NOT_EMPTY(1018, "Color must not be empty", 400),
     COLOR_OVER_BOUNCE(1018, "Color must have 7 characters", 400),
 
-
+    //product
+    PRODUCT_EXISTED(1016, "Product has already existed", 400),
+    PRODUCT_NOT_FOUND(1017, "Product not found", 404),
+    PRODUCT_NAME_NOT_EMPTY(1018, "Product name must not be empty", 400),
+    PRODUCT_PRICE_NOT_EMPTY(1018, "Product price must not be empty", 400),
+    PRODUCT_IMAGE_NOT_EMPTY(1018, "Product image must not be empty", 400),
+    PRODUCT_DESC_NOT_EMPTY(1018, "Product description must not be empty", 400),
+    PRODUCT_NOT_EMPTY(1018, "Product must not be empty", 400),
+    PRODUCT_PRICE_INVALID(1022, "Price must be at least 50,000", 400),
+    PRODUCT_SEASON_INVALID(1023, "Season must have at least 2 years", 400),
+    PRODUCT_STOCK_INVALID(1024, "Product stock must larger than 1 and smaller than 100", 400),
+    PRODUCT_STOCK_EMPTY(1025, "Product stock must not be empty", 400),
+    PRODUCT_SIZE_EMPTY(1026, "Product size must not be empty", 400),
     ;
 
     int code;
