@@ -1,6 +1,8 @@
 package com.sportman.controllers;
 
 import com.sportman.dto.request.ProductCreateRequest;
+import com.sportman.dto.request.ProductUpdateRequest;
+import com.sportman.dto.request.ProductUpdateStockRequest;
 import com.sportman.dto.response.ApiResponse;
 import com.sportman.dto.response.ProductCreateResponse;
 import com.sportman.dto.response.page.ProductPageResponse;
@@ -37,14 +39,37 @@ public class ProductController {
                 .build();
     }
 
+    @PatchMapping("/update/{productId}")
+    public ApiResponse<ProductCreateResponse> update(
+            @RequestBody @Valid ProductUpdateRequest request,
+            @PathVariable(name = "productId") String productId
+    ) {
+        return ApiResponse.<ProductCreateResponse>builder()
+                .statusCode(200)
+                .content(productService.update(productId, request))
+                .msg("update successfully")
+                .build();
+    }
+
+    @PatchMapping("/update-stock/{productId}/{sizeId}")
+    public ApiResponse<Void> updateStock(
+            @RequestBody @Valid ProductUpdateStockRequest request,
+            @PathVariable(name = "productId") String productId,
+            @PathVariable(name = "sizeId") String sizeId
+    ) {
+        productService.updateStock(productId,sizeId, request);
+        return ApiResponse.<Void>builder()
+                .statusCode(200)
+                .msg("update successfully")
+                .build();
+    }
+
     @PostMapping("/upload/{productId}")
     public ApiResponse<Void> upload(
             @RequestParam("file") List<MultipartFile> files,
             @PathVariable(name = "productId", required = true) String productId
     ) {
-
         productService.uploadImage(files, productId);
-
         return ApiResponse.<Void>builder()
                 .statusCode(200)
                 .msg("upload successfully")

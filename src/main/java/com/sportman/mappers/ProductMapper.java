@@ -20,6 +20,9 @@ public interface ProductMapper {
     })
     public Product toProduct(ProductCreateRequest request);
 
+    @Mappings({
+            @Mapping(target = "stocks", ignore = true)
+    })
     public ProductCreateResponse toResponse(Product product);
 
 }

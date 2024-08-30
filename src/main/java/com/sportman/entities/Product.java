@@ -49,17 +49,17 @@ public class Product extends AbstractEntity implements Serializable {
     @Column(name = "back_image", nullable = true)
     String backImage;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     Season season;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "club_name")
     Club club;
 
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
     List<ProductSize> stocks;
 
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
     List<Color> colors;
 
 }

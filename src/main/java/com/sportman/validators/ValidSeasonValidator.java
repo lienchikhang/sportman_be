@@ -7,6 +7,7 @@ import jakarta.validation.ConstraintValidatorContext;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public class ValidSeasonValidator implements ConstraintValidator<ValidSeason, List<Integer>> {
     @Override
@@ -17,7 +18,7 @@ public class ValidSeasonValidator implements ConstraintValidator<ValidSeason, Li
     @Override
     public boolean isValid(List<Integer> value, ConstraintValidatorContext context) {
 
-        if (value.isEmpty()) return true;
+        if (Objects.isNull(value) || value.isEmpty()) return true;
 
         int startYear = value.get(0);
         int endYear = value.get(1);

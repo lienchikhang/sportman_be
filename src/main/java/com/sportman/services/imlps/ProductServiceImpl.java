@@ -2,9 +2,7 @@ package com.sportman.services.imlps;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
-import com.sportman.dto.request.ColorCreateRequest;
-import com.sportman.dto.request.ProductCreateRequest;
-import com.sportman.dto.request.ProductUpdateRequest;
+import com.sportman.dto.request.*;
 import com.sportman.dto.response.ProductCreateResponse;
 import com.sportman.dto.response.page.ProductPageResponse;
 import com.sportman.entities.*;
@@ -33,10 +31,7 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -44,13 +39,19 @@ import java.util.Map;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ProductServiceImpl implements ProductService {
 
+    //repos
     ProductRepository productRepository;
     SeasonRepository seasonRepository;
     ClubRepository clubRepository;
     SizeRepository sizeRepository;
     ColorRepository colorRepository;
+    ProductSizeRepository productSizeRepository;
+
+    //mappers
     ProductMapper productMapper;
     ColorMapper colorMapper;
+
+    //others
     Cloudinary cloudinary;
 
 
@@ -128,13 +129,72 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public void delete(String productId) {
+        //check product exist
+        Product product = productRepository.findById(productId).orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
 
+        //delete
+        product.setIsDeleted(true);
+
+        //save
+        productRepository.save(product);
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
+    @Transactional
     public ProductCreateResponse update(String productId, ProductUpdateRequest request) {
-        return null;
+
+        //check product exist
+        Product product = productRepository.findById(productId).orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
+
+        if (Objects.nonNull(request.getProductName())) {
+            product.setProductName(request.getProductName().replaceAll(" ", "-"));
+        }
+
+        if (Objects.nonNull(request.getProductDesc())) {
+            product.setProductDesc(request.getProductDesc());
+        }
+
+        if (Objects.nonNull(request.getProductPrice())) {
+            product.setProductPrice(request.getProductPrice());
+        }
+
+        if (Objects.nonNull(request.getSeason())) {
+            Season season = seasonRepository.findById(SeasonId.builder()
+                    .yearStart(request.getSeason().getFirst())
+                    .yearEnd(request.getSeason().getLast())
+                    .build()).orElseThrow(() -> new AppException(ErrorCode.SEASON_NOT_FOUND));
+            product.setSeason(season);
+        }
+
+        if (Objects.nonNull(request.getClub())) {
+            Club club = clubRepository.findById(request.getClub()).orElseThrow(() -> new AppException(ErrorCode.CLUB_NOT_FOUND));
+            product.setClub(club);
+        }
+
+        if (!CollectionUtils.isEmpty(request.getColors())) {
+
+            List<Color> colors = colorRepository.findAllById(request.getColors());
+
+            product.setColors(colors);
+            product.getColors().forEach(color -> color.setProduct(product));
+        }
+
+        Product savedProduct = productRepository.save(product);
+        ProductCreateResponse res = productMapper.toResponse(savedProduct);
+        List<SizeAndStock> sizeAndStocks = new ArrayList<>();
+
+        savedProduct.getStocks().forEach(stock -> {
+            sizeAndStocks.add(SizeAndStock.builder()
+                    .size(stock.getSizeTag().getSizeTag())
+                    .stock(stock.getStock())
+                    .build());
+        });
+        res.setStocks(sizeAndStocks);
+
+        return res;
     }
 
     @Override
@@ -183,6 +243,28 @@ public class ProductServiceImpl implements ProductService {
             product.setBackImage(imgUrls.get(1));
             productRepository.save(product);
 
+    }
+
+    @Override
+    @PreAuthorize("hasRole('ADMIN')")
+    public void updateStock(String productId, String sizeTag, ProductUpdateStockRequest request) {
+
+        log.warn(sizeTag);
+
+        //check product exist
+        Product product = productRepository.findById(productId).orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
+
+        //check size exist
+        Size size = sizeRepository.findById(sizeTag.toUpperCase()).orElseThrow(() -> new AppException(ErrorCode.SIZE_NOT_FOUND));
+
+        ProductSize productSize = productSizeRepository.findById(ProductSizeId.builder().
+                sizeTag(size.getSizeTag())
+                .productId(product.getId())
+                .build()).orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
+
+        productSize.setStock(request.getStock());
+
+        productSizeRepository.save(productSize);
     }
 
     private byte[] compressImage(BufferedImage orgImage, String format) throws IOException {

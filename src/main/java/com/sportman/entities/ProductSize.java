@@ -1,5 +1,7 @@
 package com.sportman.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -14,6 +16,7 @@ import java.io.Serializable;
 @Entity
 @Table(name = "product_size")
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class ProductSize {
     @EmbeddedId
     ProductSizeId id;

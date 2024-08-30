@@ -86,6 +86,7 @@ public enum ErrorCode {
     PRODUCT_STOCK_EMPTY(1025, "Product stock must not be empty", 400),
     PRODUCT_SIZE_EMPTY(1026, "Product size must not be empty", 400),
     PRODUCT_INVALID_FILE(1027, "Product must have 2 images", 400),
+    PRODUCT_STOCK_NOT_EMPTY(1028, "Product stock must not be empty", 400),
     ;
 
     int code;

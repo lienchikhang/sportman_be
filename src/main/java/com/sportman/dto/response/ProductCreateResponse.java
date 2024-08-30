@@ -1,5 +1,6 @@
 package com.sportman.dto.response;
 
+import com.sportman.dto.request.SizeAndStock;
 import com.sportman.entities.AbstractEntity;
 import com.sportman.entities.Club;
 import com.sportman.entities.ProductSize;
@@ -28,6 +29,5 @@ public class ProductCreateResponse {
     String backImage;
     Season season;
     Club club;
-    List<ProductSize> stocks;
-
+    List<SizeAndStock> stocks;
 }
