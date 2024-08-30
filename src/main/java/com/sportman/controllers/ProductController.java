@@ -10,6 +10,9 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/products")
@@ -31,6 +34,20 @@ public class ProductController {
         return ApiResponse.<ProductCreateResponse>builder()
                 .statusCode(201)
                 .content(productService.create(request))
+                .build();
+    }
+
+    @PostMapping("/upload/{productId}")
+    public ApiResponse<Void> upload(
+            @RequestParam("file") List<MultipartFile> files,
+            @PathVariable(name = "productId", required = true) String productId
+    ) {
+
+        productService.uploadImage(files, productId);
+
+        return ApiResponse.<Void>builder()
+                .statusCode(200)
+                .msg("upload successfully")
                 .build();
     }
 

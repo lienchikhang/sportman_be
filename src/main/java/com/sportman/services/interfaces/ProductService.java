@@ -4,6 +4,10 @@ import com.sportman.dto.request.ProductCreateRequest;
 import com.sportman.dto.request.ProductUpdateRequest;
 import com.sportman.dto.response.ProductCreateResponse;
 import com.sportman.dto.response.page.ProductPageResponse;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.util.List;
 
 public interface ProductService {
 
@@ -15,5 +19,5 @@ public interface ProductService {
 
     public ProductCreateResponse update(String productId, ProductUpdateRequest request);
 
-
+    public void uploadImage(List<MultipartFile> file, String productId);
 }
