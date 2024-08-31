@@ -1,6 +1,7 @@
 package com.sportman.dto.response.page;
 
 import com.sportman.dto.response.ProductCreateResponse;
+import com.sportman.dto.response.ProductGetResponse;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -12,7 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ProductPageResponse {
-    List<ProductCreateResponse> products;
+    List<ProductGetResponse> products;
     Integer currentPage;
     Long totalPage;
     Long totalElements;

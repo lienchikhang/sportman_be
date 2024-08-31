@@ -4,6 +4,7 @@ import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import com.sportman.dto.request.*;
 import com.sportman.dto.response.ProductCreateResponse;
+import com.sportman.dto.response.ProductGetResponse;
 import com.sportman.dto.response.page.ProductPageResponse;
 import com.sportman.entities.*;
 import com.sportman.exceptions.AppException;
@@ -12,6 +13,7 @@ import com.sportman.mappers.ColorMapper;
 import com.sportman.mappers.ProductMapper;
 import com.sportman.repositories.*;
 import com.sportman.services.interfaces.ProductService;
+import com.sportman.services.specifications.ProductSpecification;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -20,6 +22,8 @@ import net.coobird.thumbnailator.Thumbnails;
 import org.imgscalr.Scalr;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,6 +36,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -56,13 +61,70 @@ public class ProductServiceImpl implements ProductService {
 
 
     @Override
-    public ProductPageResponse get() {
-        return null;
+    public ProductPageResponse get(
+            Pageable pageable,
+            String name,
+            String club,
+            String season,
+            Integer price,
+            String sizes,
+            Boolean isDeleted,
+            String sort
+    ) {
+
+        Specification<Product> productSpec = Specification.where(ProductSpecification.hasDeleted(isDeleted));
+
+        if (Objects.nonNull(name)) {
+            productSpec = productSpec.and(ProductSpecification.hasName(name));
+        }
+
+        if (Objects.nonNull(club)) {
+            productSpec = productSpec.and(ProductSpecification.hasClub(club));
+        }
+
+        if (Objects.nonNull(price)) {
+            productSpec = productSpec.and(ProductSpecification.hasPrice(price));
+        }
+
+        if (Objects.nonNull(season)) {
+            List<Integer> intSeasons = Arrays.stream(season.split("-"))
+                    .map(Integer::parseInt)
+                    .collect(Collectors.toList());
+            productSpec = productSpec.and(ProductSpecification.hasSeason(intSeasons.getFirst(), intSeasons.getLast()));
+        }
+
+        if (Objects.nonNull(sizes)) {
+            List<String> splitSizes = Arrays.stream(sizes.split("-")).toList();
+            productSpec = productSpec.and(ProductSpecification.hasSize(splitSizes));
+        }
+
+        if (Objects.nonNull(sort)) {
+            productSpec = productSpec.and(ProductSpecification.hasSort(sort.toLowerCase()));
+        }
+
+        List<Product> products = productRepository.findAll(productSpec, pageable).toList();
+        List<ProductGetResponse> productGetResponseList = products.stream().map(pro -> productMapper.toGetResponse(pro)).toList();
+
+        for (int i = 0; i < products.size(); i++) {
+            List<Color> colors = products.get(i).getColors();
+            productGetResponseList.get(i).setColors(colors.stream().map(color -> color.getColorHex()).toList());
+        }
+
+        long totalPros = productRepository.count(productSpec);
+
+        return ProductPageResponse.builder()
+                .products(productGetResponseList)
+                .currentPage(pageable.getPageNumber() + 1)
+                .totalPage(Math.ceilDiv(totalPros, pageable.getPageSize()))
+                .totalElements(totalPros)
+                .build();
     }
+
+
 
     @Override
     @Transactional
-    @PreAuthorize("hasRole('ADMIN') && hasAuthority('CREATE_PRODUCT')")
+    @PreAuthorize("hasRole('ADMIN')") // && hasAuthority('CREATE_PRODUCT')
     public ProductCreateResponse create(ProductCreateRequest request) {
 
         //check product name exist
@@ -76,7 +138,7 @@ public class ProductServiceImpl implements ProductService {
                 .build()).orElseThrow(() -> new AppException(ErrorCode.SEASON_NOT_FOUND));
 
         //check club exist
-        Club club = clubRepository.findById(request.getClub().toUpperCase()).orElseThrow(() -> new AppException(ErrorCode.CLUB_NOT_FOUND));
+        Club club = clubRepository.findById(request.getClub().toUpperCase().replaceAll(" ", "-")).orElseThrow(() -> new AppException(ErrorCode.CLUB_NOT_FOUND));
 
         //create colors
         List<Color> colors = request.getColors()
@@ -265,6 +327,12 @@ public class ProductServiceImpl implements ProductService {
         productSize.setStock(request.getStock());
 
         productSizeRepository.save(productSize);
+    }
+
+    @Override
+    public ProductCreateResponse getById(String productId) {
+        Product product = productRepository.findById(productId).orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
+        return productMapper.toResponse(product);
     }
 
     private byte[] compressImage(BufferedImage orgImage, String format) throws IOException {
