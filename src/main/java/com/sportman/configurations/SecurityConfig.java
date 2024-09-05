@@ -40,6 +40,9 @@ public class SecurityConfig {
             "/sizes",
             "/colors",
             "/products",
+            "/products/get-list-name",
+            "/products/get-by-id/*",
+            "/products/get-rates-by-id/*",
 
             //POST
             "/users/create",
@@ -48,6 +51,7 @@ public class SecurityConfig {
             "/auth/logout",
             "/auth/refresh",
             "/auth/register",
+            "/rate/create",
 
     };
 

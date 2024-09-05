@@ -72,9 +72,6 @@ public class ProductSpecification {
 
         return (root, criteriaQuery, criteriaBuilder) -> {
 
-            log.info("beforeee");
-            log.info(Objects.isNull(price) ? "true" : "false");
-
             if (Objects.isNull(price)) return criteriaBuilder.conjunction();
 
             criteriaQuery.multiselect(
@@ -84,9 +81,6 @@ public class ProductSpecification {
                     root.get("frontImage"),
                     root.get("backImage"),
                     root.get("colors"));
-
-            log.info("run in has price");
-            log.info(price.toString());
 
             return criteriaBuilder.lessThanOrEqualTo(root.get("productPrice"), price);
         };

@@ -3,14 +3,15 @@ package com.sportman.services.imlps;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import com.sportman.dto.request.*;
-import com.sportman.dto.response.ProductCreateResponse;
-import com.sportman.dto.response.ProductGetResponse;
+import com.sportman.dto.response.*;
 import com.sportman.dto.response.page.ProductPageResponse;
+import com.sportman.dto.response.page.RatePageResponse;
 import com.sportman.entities.*;
 import com.sportman.exceptions.AppException;
 import com.sportman.exceptions.ErrorCode;
 import com.sportman.mappers.ColorMapper;
 import com.sportman.mappers.ProductMapper;
+import com.sportman.mappers.RateMapper;
 import com.sportman.repositories.*;
 import com.sportman.services.interfaces.ProductService;
 import com.sportman.services.specifications.ProductSpecification;
@@ -51,10 +52,12 @@ public class ProductServiceImpl implements ProductService {
     SizeRepository sizeRepository;
     ColorRepository colorRepository;
     ProductSizeRepository productSizeRepository;
+    RateRepository rateRepository;
 
     //mappers
     ProductMapper productMapper;
     ColorMapper colorMapper;
+    RateMapper rateMapper;
 
     //others
     Cloudinary cloudinary;
@@ -113,13 +116,31 @@ public class ProductServiceImpl implements ProductService {
         long totalPros = productRepository.count(productSpec);
 
         return ProductPageResponse.builder()
-                .products(productGetResponseList)
+                .products(Collections.singletonList(productGetResponseList))
                 .currentPage(pageable.getPageNumber() + 1)
                 .totalPage(Math.ceilDiv(totalPros, pageable.getPageSize()))
                 .totalElements(totalPros)
                 .build();
     }
 
+    @Override
+    public ProductPageResponse getListName(Pageable pageable, String name ) {
+
+        log.info(pageable.toString());
+
+        Specification<Product> specs = Specification.where(ProductSpecification.hasDeleted(false))
+                .and(ProductSpecification.hasName(name));
+
+        List<ProductNameResponse> pros = productRepository.findAll(specs, pageable)
+                .stream().map(pro -> productMapper.toNameResponse(pro)).toList();
+
+        return ProductPageResponse.builder()
+                .totalElements(productRepository.count(specs))
+                .totalPage(Math.ceilDiv(productRepository.count(specs), pageable.getPageSize()))
+                .currentPage(pageable.getPageNumber() + 1)
+                .products(Collections.singletonList(pros))
+                .build();
+    }
 
 
     @Override
@@ -330,10 +351,55 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductCreateResponse getById(String productId) {
-        Product product = productRepository.findById(productId).orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
-        return productMapper.toResponse(product);
+    public ProductGetDetailResponse getById(String productId) {
+        //check exist
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
+
+        ProductGetDetailResponse res = productMapper.toGetDetailResponse(product);
+
+        //get sizes
+        List<ProductSize> sizes = productSizeRepository.findAllByProduct(product);
+        res.setStocks(sizes.stream().map(size -> Stocks.builder()
+                        .sizeTag(size.getSizeTag().getSizeTag())
+                        .stocks(size.getStock())
+                        .build())
+                .toList());
+
+        //get colors
+        res.setColors(product.getColors().stream().map(color -> color.getColorHex()).toList());
+
+        //get season
+        Season productSeason = product.getSeason();
+        List<Integer> dates = new ArrayList<>();
+        dates.add(productSeason.getId().getYearStart());
+        dates.add(productSeason.getId().getYearEnd());
+        res.setSeasons(dates);
+
+        return res;
+
     }
+
+    @Override
+    public RatePageResponse getRatesByProductId(String productId, Pageable pageable) {
+
+        //check product exist
+        Product product = productRepository.findById(productId).orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
+
+        List<RateResponse> rates = rateRepository.findAllByProduct(pageable, product)
+                .stream().map(rate -> rateMapper.toResponse(rate))
+                .toList();
+
+        long totalRates = rateRepository.count();
+
+        return RatePageResponse.builder()
+                .rates(rates)
+                .currentPage(pageable.getPageNumber() + 1)
+                .totalElements(totalRates)
+                .totalPage(Math.ceilDiv(totalRates, pageable.getPageSize()))
+                .build();
+    }
+
 
     private byte[] compressImage(BufferedImage orgImage, String format) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -345,4 +411,5 @@ public class ProductServiceImpl implements ProductService {
 
         return baos.toByteArray();
     }
+
 }

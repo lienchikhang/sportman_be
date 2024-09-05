@@ -5,7 +5,11 @@ import com.sportman.dto.request.ProductUpdateRequest;
 import com.sportman.dto.request.ProductUpdateStockRequest;
 import com.sportman.dto.response.ApiResponse;
 import com.sportman.dto.response.ProductCreateResponse;
+import com.sportman.dto.response.ProductGetDetailResponse;
+import com.sportman.dto.response.ProductNameResponse;
 import com.sportman.dto.response.page.ProductPageResponse;
+import com.sportman.dto.response.page.RatePageResponse;
+import com.sportman.entities.Product;
 import com.sportman.services.interfaces.ProductService;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
@@ -49,17 +53,41 @@ public class ProductController {
     }
 
     @GetMapping("/get-list-name")
-    public ApiResponse<ProductPageResponse> getOnlyName() {
-        return ApiResponse.<ProductPageResponse>builder().statusCode(200).build();
+    public ApiResponse<ProductPageResponse> getOnlyName(
+            @RequestParam(name = "name") String name,
+            @RequestParam(name = "page", defaultValue = "1") int page,
+            @RequestParam(name = "pageSize", defaultValue = "6") int pageSize
+    ) {
+
+        Pageable pageable = PageRequest.of(page - 1, pageSize);
+
+        return ApiResponse.<ProductPageResponse>builder()
+                .statusCode(200)
+                .content(productService.getListName(pageable, name))
+                .build();
     }
 
     @GetMapping("/get-by-id/{productId}")
-    public ApiResponse<ProductCreateResponse> getById(
+    public ApiResponse<ProductGetDetailResponse> getById(
             @PathVariable(name = "productId") String productId
     ) {
-        return ApiResponse.<ProductCreateResponse>builder()
+        return ApiResponse.<ProductGetDetailResponse>builder()
                 .content(productService.getById(productId))
                 .statusCode(200)
+                .build();
+    }
+
+    @GetMapping("/get-rates-by-id/{productId}")
+    public ApiResponse<RatePageResponse> getRatesById(
+            @PathVariable(name = "productId", required = true) String productId,
+            @RequestParam(name = "page", defaultValue = "1") int page,
+            @RequestParam(name = "pageSize", defaultValue = "6") int pageSize
+    ) {
+
+        Pageable pageable = PageRequest.of(page - 1, pageSize);
+
+        return ApiResponse.<RatePageResponse>builder()
+                .content(productService.getRatesByProductId(productId, pageable))
                 .build();
     }
 

@@ -1,7 +1,7 @@
 package com.sportman.dto.response.page;
 
-import com.sportman.dto.response.ProductCreateResponse;
-import com.sportman.dto.response.ProductGetResponse;
+import com.sportman.dto.response.ColorCreateResponse;
+import com.sportman.dto.response.RateResponse;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -9,11 +9,11 @@ import java.util.List;
 
 @Data
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ProductPageResponse<T> {
-    List<T> products;
+public class RatePageResponse {
+    List<RateResponse> rates;
     Integer currentPage;
     Long totalPage;
     Long totalElements;

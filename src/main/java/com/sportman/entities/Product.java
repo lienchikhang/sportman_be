@@ -56,7 +56,7 @@ public class Product extends AbstractEntity implements Serializable {
     @JoinColumn(name = "club_name")
     Club club;
 
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     List<ProductSize> stocks;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)

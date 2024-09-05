@@ -22,12 +22,12 @@ public class ProductSize {
     ProductSizeId id;
 
     @MapsId("productId")
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = true)
     @JoinColumn(name = "product_id", nullable = false)
     Product product;
 
     @MapsId("sizeTag")
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = true)
     @JoinColumn(name = "size_tag", nullable = false)
     Size sizeTag;
 

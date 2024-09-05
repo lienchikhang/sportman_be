@@ -2,7 +2,9 @@ package com.sportman.mappers;
 
 import com.sportman.dto.request.ProductCreateRequest;
 import com.sportman.dto.response.ProductCreateResponse;
+import com.sportman.dto.response.ProductGetDetailResponse;
 import com.sportman.dto.response.ProductGetResponse;
+import com.sportman.dto.response.ProductNameResponse;
 import com.sportman.entities.Product;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -32,4 +34,9 @@ public interface ProductMapper {
             @Mapping(target = "id", source = "id")
     })
     public ProductGetResponse toGetResponse(Product product);
+
+    public ProductNameResponse toNameResponse(Product product);
+
+    @Mapping(target = "colors", ignore = true)
+    public ProductGetDetailResponse toGetDetailResponse(Product product);
 }
