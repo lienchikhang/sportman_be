@@ -2,6 +2,7 @@ package com.sportman.dto.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -16,22 +17,22 @@ import java.time.LocalDate;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class AuthRequest {
 
-    @NotNull
+    @NotEmpty(message = "USERNAME_NOT_EMPTY")
     @Length(min = 8, message = "USERNAME_INVALID")
     String username;
 
-    @NotNull
+    @NotEmpty(message = "")
     @Email(message = "EMAIL_INVALID")
     String email;
 
-    @NotNull
+    @NotEmpty(message = "PASSWORD_NOT_EMPTY")
     @Min(value = 6, message = "PASSWORD_INVALID")
     String password;
 
-    @NotNull
+    @NotEmpty(message = "")
     String firstName;
 
-    @NotNull
+    @NotEmpty(message = "")
     String lastName;
 
 }

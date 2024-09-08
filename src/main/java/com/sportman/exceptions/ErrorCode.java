@@ -87,6 +87,12 @@ public enum ErrorCode {
     PRODUCT_SIZE_EMPTY(1026, "Product size must not be empty", 400),
     PRODUCT_INVALID_FILE(1027, "Product must have 2 images", 400),
     PRODUCT_STOCK_NOT_EMPTY(1028, "Product stock must not be empty", 400),
+    PRODUCT_ID_NOT_EMPTY(1030, "Product id must not be empty", 400),
+
+    //rate
+    RATE_NUMBER_INVALID(1029, "Rate must be >= 1 or <= 5", 400),
+    RATE_COMMENT_NOT_EMPTY(1031, "Comment must not be empty", 400),
+
     ;
 
     int code;

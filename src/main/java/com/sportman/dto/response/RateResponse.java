@@ -12,8 +12,7 @@ import java.time.LocalDate;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class RateResponse {
 
-    String username;
-    String userAvatar;
+    UserCommentResponse user;
     String rateComment;
     LocalDate createdAt;
 

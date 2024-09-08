@@ -53,7 +53,7 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    @PreAuthorize("hasAuthority('CREATE_ROLE')")
+    @PreAuthorize("hasAuthority('CREATE_ROLE') || hasRole('ADMIN')")
     @Transactional
     public RoleResponse create(RoleRequest request) {
 

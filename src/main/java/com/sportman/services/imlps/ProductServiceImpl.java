@@ -387,7 +387,14 @@ public class ProductServiceImpl implements ProductService {
         Product product = productRepository.findById(productId).orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
 
         List<RateResponse> rates = rateRepository.findAllByProduct(pageable, product)
-                .stream().map(rate -> rateMapper.toResponse(rate))
+                .stream().map(rate -> {
+                    RateResponse rs = rateMapper.toResponse(rate);
+                    rs.setUser(UserCommentResponse.builder()
+                            .avatar(rate.getUser().getAvatar())
+                            .username(rate.getUser().getUsername())
+                            .build());
+                    return rs;
+                })
                 .toList();
 
         long totalRates = rateRepository.count();

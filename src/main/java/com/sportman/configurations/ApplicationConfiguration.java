@@ -1,5 +1,7 @@
 package com.sportman.configurations;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import com.sportman.entities.Role;
 import com.sportman.entities.User;
 import com.sportman.entities.UserRole;
@@ -12,7 +14,9 @@ import com.sportman.repositories.UserRoleRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,6 +36,10 @@ public class ApplicationConfiguration {
     PasswordEncoder passwordEncoder;
     UserRepository userRepository;
     RoleRepository roleRepository;
+
+    @NonFinal
+    @Value("${cloudinary.apiKey}")
+    String cloudinaryApiKey;
 
     @Bean
     @Transactional
@@ -59,6 +67,7 @@ public class ApplicationConfiguration {
                         .firstName("admin")
                         .lastName("admin")
                         .email("admin@gmail.com")
+                        .balance(0)
                         .build();
 
                 admin.setIsDeleted(false);
@@ -78,5 +87,14 @@ public class ApplicationConfiguration {
         };
     }
 
+    @Bean
+    public Cloudinary cloudinary() {
+        return new Cloudinary(ObjectUtils.asMap(
+                "cloud_name", "drfjok8d7",
+                "api_key", "319771257136443",
+                "api_secret", cloudinaryApiKey,
+                "folder", "sportman",
+                "secure", true));
+    }
 
 }

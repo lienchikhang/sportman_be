@@ -37,6 +37,10 @@ public interface ProductMapper {
 
     public ProductNameResponse toNameResponse(Product product);
 
-    @Mapping(target = "colors", ignore = true)
+    @Mappings({
+            @Mapping(target = "colors", ignore = true),
+            @Mapping(target = "stocks", ignore = true),
+            @Mapping(target = "seasons", ignore = true)
+    })
     public ProductGetDetailResponse toGetDetailResponse(Product product);
 }

@@ -38,7 +38,6 @@ public class Rate implements Serializable {
     @Column(name = "rate_comment")
     String rateComment;
 
-    @NotNull
     @Column(name = "created_at")
     @CreationTimestamp
     LocalDate createdAt;

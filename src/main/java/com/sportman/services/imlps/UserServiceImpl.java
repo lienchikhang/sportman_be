@@ -2,6 +2,7 @@ package com.sportman.services.imlps;
 
 import com.sportman.dto.request.AuthRequest;
 import com.sportman.dto.response.AuthResponse;
+import com.sportman.entities.Cart;
 import com.sportman.entities.Role;
 import com.sportman.entities.User;
 import com.sportman.entities.UserRole;
@@ -10,6 +11,7 @@ import com.sportman.exceptions.AppException;
 import com.sportman.exceptions.ErrorCode;
 import com.sportman.mappers.AuthMapper;
 import com.sportman.mappers.UserMapper;
+import com.sportman.repositories.CartRepository;
 import com.sportman.repositories.RoleRepository;
 import com.sportman.repositories.UserRepository;
 import com.sportman.services.interfaces.UserService;
@@ -26,10 +28,14 @@ import java.util.HashSet;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
+    //repos
     UserRepository userRepository;
-    UserMapper userMapper;
     PasswordEncoder passwordEncoder;
     RoleRepository roleRepository;
+    CartRepository cartRepository;
+
+    //mappers
+    UserMapper userMapper;
     AuthMapper authMapper;
 
     @Override
@@ -58,7 +64,14 @@ public class UserServiceImpl implements UserService {
         //set roles
         newUser.setUserRole(roles);
 
+        //create default cart
+        User savedUser = userRepository.save(newUser);
+        cartRepository.save(Cart.builder()
+                .id(savedUser.getUsername())
+                .user(savedUser)
+                .build());
+
         //save user
-        return authMapper.toAuthRespones(userRepository.save(newUser));
+        return authMapper.toAuthRespones(savedUser);
     }
 }

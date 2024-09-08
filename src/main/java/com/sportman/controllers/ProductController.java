@@ -83,10 +83,9 @@ public class ProductController {
             @RequestParam(name = "page", defaultValue = "1") int page,
             @RequestParam(name = "pageSize", defaultValue = "6") int pageSize
     ) {
-
         Pageable pageable = PageRequest.of(page - 1, pageSize);
-
         return ApiResponse.<RatePageResponse>builder()
+                .statusCode(200)
                 .content(productService.getRatesByProductId(productId, pageable))
                 .build();
     }
