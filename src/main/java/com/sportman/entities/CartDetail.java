@@ -28,6 +28,11 @@ public class CartDetail implements Serializable {
     @JoinColumn(name = "product_id", nullable = false)
     Product product;
 
+    @MapsId("sizeTag")
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "size_tag", nullable = false)
+    Size size;
+
     @Column(name = "amount")
     Integer amount;
 

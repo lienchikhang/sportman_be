@@ -93,6 +93,10 @@ public enum ErrorCode {
     RATE_NUMBER_INVALID(1029, "Rate must be >= 1 or <= 5", 400),
     RATE_COMMENT_NOT_EMPTY(1031, "Comment must not be empty", 400),
 
+    //cart
+    CART_NOT_FOUND(1032, "Cart not found", 404),
+//    RATE_COMMENT_NOT_EMPTY(1031, "Comment must not be empty", 400),
+
     ;
 
     int code;

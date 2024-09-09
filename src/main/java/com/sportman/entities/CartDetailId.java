@@ -18,7 +18,7 @@ import java.util.Objects;
 @Setter
 @Embeddable
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class CartDetailId implements Serializable {
+public class CartDetailId {
     @Size(max = 36)
     @NotNull
     @Column(name = "cart_id", nullable = false, length = 36)
@@ -29,18 +29,6 @@ public class CartDetailId implements Serializable {
     @Column(name = "product_id", nullable = false, length = 36)
     String productId;
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-        CartDetailId entity = (CartDetailId) o;
-        return Objects.equals(this.productId, entity.productId) &&
-                Objects.equals(this.cartId, entity.cartId);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(productId, cartId);
-    }
-
+    @Column(name = "size_tag", nullable = false)
+    String sizeTag;
 }
