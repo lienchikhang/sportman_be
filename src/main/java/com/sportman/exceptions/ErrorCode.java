@@ -97,6 +97,9 @@ public enum ErrorCode {
     CART_NOT_FOUND(1032, "Cart not found", 404),
 //    RATE_COMMENT_NOT_EMPTY(1031, "Comment must not be empty", 400),
 
+    //order
+    ORDER_NOT_FOUND(1033, "Order not found", 404),
+
     ;
 
     int code;

@@ -1,5 +1,6 @@
 package com.sportman.entities;
 
+import com.sportman.enums.OrderStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.*;
@@ -8,6 +9,7 @@ import org.hibernate.annotations.ColumnDefault;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.List;
 
 @Builder
 @AllArgsConstructor
@@ -26,16 +28,15 @@ public class Order implements Serializable {
     @Column(name = "created_at")
     LocalDate createdAt;
 
-    @ColumnDefault("0")
-    @Column(name = "is_paid")
-    Boolean isPaid;
-
-    @ColumnDefault("0")
-    @Column(name = "is_delivered")
-    Boolean isDelivered;
+    @Column(name = "status")
+    @Enumerated(EnumType.STRING)
+    OrderStatus status;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     User user;
+
+    @OneToMany(mappedBy = "order", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    List<OrderDetail> orderDetails;
 
 }
