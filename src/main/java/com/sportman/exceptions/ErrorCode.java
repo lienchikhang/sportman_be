@@ -99,7 +99,7 @@ public enum ErrorCode {
 
     //order
     ORDER_NOT_FOUND(1033, "Order not found", 404),
-
+    ORDER_NOT_CANCEL(1034, "Order can not be canceled", 400),
     ;
 
     int code;

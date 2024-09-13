@@ -1,6 +1,7 @@
 package com.sportman.services.specifications;
 
 import com.sportman.entities.Order;
+import com.sportman.entities.User;
 import com.sportman.enums.OrderStatus;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -48,5 +49,19 @@ public class OrderSpecification {
         };
     }
 
+    public static Specification<Order> hasUser(User user) {
+        return (root, query, criteriaBuilder) -> {
+            if (Objects.isNull(user)) return criteriaBuilder.conjunction();
+
+            query.multiselect(
+                    root.get("id"),
+                    root.get("createdAt"),
+                    root.get("status"),
+                    root.get("orderDetails")
+            );
+
+            return criteriaBuilder.equal(root.get("user"), user);
+        };
+    }
 
 }

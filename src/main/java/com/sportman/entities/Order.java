@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -26,6 +27,7 @@ public class Order implements Serializable {
     String id;
 
     @Column(name = "created_at")
+    @CreationTimestamp
     LocalDate createdAt;
 
     @Column(name = "status")

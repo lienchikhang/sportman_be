@@ -20,6 +20,7 @@ import com.sportman.services.specifications.OrderSpecification;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -30,6 +31,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
@@ -52,12 +54,16 @@ public class OrderServiceImpl implements OrderService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = userRepository.findByUsername(authentication.getName()).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
+        //spec
+        Specification spec = Specification
+                .where(OrderSpecification.hasSort(sort)).and(OrderSpecification.hasUser(user));
+
         //get orders
-        List<OrderResponse> orders = orderRepository.findAllByUser(pageable, user)
-                .stream().map(order -> orderMapper.toResponse(order)).toList();
+        List<OrderResponse> orders = orderRepository.findAll(spec,pageable)
+                .stream().map(or -> orderMapper.toResponse((Order) or)).toList();
 
         //calc total
-        long totalOrder = orderRepository.count();
+        long totalOrder = orderRepository.count(spec);
 
         return OrderPageResponse.builder()
                 .currentPage(pageable.getPageNumber() + 1)
@@ -88,8 +94,15 @@ public class OrderServiceImpl implements OrderService {
             orderDetails.add(orderDetail);
         });
 
+        orderDetails.forEach(od -> {
+            log.warn(od.getAmount().toString());
+            log.warn(od.getSize().getSizeTag());
+            log.warn(od.getProduct().getProductName());
+        });
+
         //create new order
         Order newOrder = Order.builder().build();
+        newOrder.setUser(user);
         newOrder.setStatus(OrderStatus.UNPAID);
         newOrder.setOrderDetails(orderDetails);
 
@@ -116,6 +129,11 @@ public class OrderServiceImpl implements OrderService {
         //get order
         Order order = orderRepository.findByIdAndUser(orderId, user).orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
 
+        //is able to cancel
+        if (order.getStatus().name().equals(OrderStatus.PAID.name())
+                || order.getStatus().name().equals(OrderStatus.DELIVERING.name()))
+            throw new AppException(ErrorCode.ORDER_NOT_CANCEL);
+
         //cancel
         order.setStatus(OrderStatus.CANCEL);
 
@@ -126,14 +144,17 @@ public class OrderServiceImpl implements OrderService {
     @PreAuthorize("hasRole('ADMIN')")
     public OrderPageResponse getAll(Pageable pageable, String sort, OrderStatus status) {
 
+        //spec
+        Specification spec = Specification
+                .where(OrderSpecification.hasSort(sort))
+                .and(OrderSpecification.hasStatus(status));
+
         //get orders
-        List<OrderResponse> orders = orderRepository.findAll(Specification
-                        .where(OrderSpecification.hasSort(sort))
-                        .and(OrderSpecification.hasStatus(status)), pageable)
+        List<OrderResponse> orders = orderRepository.findAll(spec, pageable)
                 .stream().map(order -> orderMapper.toResponse((Order) order)).toList();
 
         //calc total
-        long totalOrder = orderRepository.count();
+        long totalOrder = orderRepository.count(spec);
 
         return OrderPageResponse.builder()
                 .currentPage(pageable.getPageNumber() + 1)
