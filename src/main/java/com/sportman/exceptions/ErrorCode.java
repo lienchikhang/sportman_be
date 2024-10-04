@@ -100,6 +100,12 @@ public enum ErrorCode {
     //order
     ORDER_NOT_FOUND(1033, "Order not found", 404),
     ORDER_NOT_CANCEL(1034, "Order can not be canceled", 400),
+
+    //otp
+    OTP_INVALID(1035, "OTP cannot be created", 404),
+    OTP_NOT_MATCH(1036, "OTP is incorrect, please try again", 400),
+    OTP_NOT_EMPTY(1037, "OTP cannot be empty", 404),
+
     ;
 
     int code;

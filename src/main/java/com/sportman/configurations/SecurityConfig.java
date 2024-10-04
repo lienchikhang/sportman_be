@@ -1,5 +1,6 @@
 package com.sportman.configurations;
 
+import com.sportman.services.imlps.CustomOAuth2UserService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -9,12 +10,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
@@ -43,6 +46,9 @@ public class SecurityConfig {
             "/products/get-list-name",
             "/products/get-by-id/*",
             "/products/get-rates-by-id/*",
+            "/auth/google/login",
+            "/auth/google/redirect",
+            "/vnpay/vn-pay-callback",
 
             //POST
             "/users/create",
@@ -52,6 +58,7 @@ public class SecurityConfig {
             "/auth/refresh",
             "/auth/register",
             "/rate/create",
+            "/auth/get-otp",
 
     };
 
@@ -67,6 +74,16 @@ public class SecurityConfig {
                 .authenticated()
         );
 
+        /**
+         * .oauth2Login(httpSecurityOAuth2LoginConfigurer -> {
+         *             httpSecurityOAuth2LoginConfigurer.loginPage("/sportman/auth/google/login");
+         *             httpSecurityOAuth2LoginConfigurer.defaultSuccessUrl("/sportman/auth/google/redirect", true);
+         *             httpSecurityOAuth2LoginConfigurer.userInfoEndpoint(userInfoEndpoint ->
+         *                             userInfoEndpoint.userService(customOAuth2UserService())
+         *                     );
+         *         })
+         */
+
         //config protected endpoints
         httpSecurity.oauth2ResourceServer(auth -> auth
                 //authenticate
@@ -77,12 +94,16 @@ public class SecurityConfig {
                 .authenticationEntryPoint(new JwtHandlingEntryPoint())
         );
 
-
         //turn off crsf
         httpSecurity.csrf(AbstractHttpConfigurer::disable);
 
 
         return httpSecurity.build();
+    }
+
+    @Bean
+    public CustomOAuth2UserService customOAuth2UserService() {
+        return new CustomOAuth2UserService();
     }
 
     @Bean

@@ -5,10 +5,7 @@ import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
-import com.sportman.dto.request.AuthIntrospectRequest;
-import com.sportman.dto.request.AuthLoginRequest;
-import com.sportman.dto.request.AuthLogoutRequest;
-import com.sportman.dto.request.AuthRequest;
+import com.sportman.dto.request.*;
 import com.sportman.dto.response.*;
 import com.sportman.entities.BlackListToken;
 import com.sportman.entities.Role;
@@ -24,6 +21,9 @@ import com.sportman.repositories.RoleRepository;
 import com.sportman.repositories.UserRepository;
 import com.sportman.repositories.UserRoleRepository;
 import com.sportman.services.interfaces.AuthService;
+import com.sportman.services.interfaces.MailService;
+import com.sportman.services.interfaces.RedisService;
+import com.sportman.utils.OtpUtils;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -49,12 +49,13 @@ import java.util.*;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AuthServiceImpl implements AuthService {
 
+    //repos
     UserRepository userRepository;
-    UserMapper userMapper;
-    AuthMapper AuthMapper;
-    UserRoleRepository userRoleRepository;
-    RoleRepository roleRepository;
     BlackListRepository blackListRepository;
+
+    //services
+    RedisService redisService;
+    MailService mailService;
 
     @NonFinal
     @Value("${jwt.secretkey}")
@@ -171,6 +172,24 @@ public class AuthServiceImpl implements AuthService {
                 .accessToken(newAccessToken)
                 .refreshToken(newRefreshToken)
                 .build();
+    }
+
+    @Override
+    public void getOTP(AuthOtpRequest request) {
+
+        //check email exist
+        if (userRepository.existsByEmail(request.getEmail())) throw new AppException(ErrorCode.USER_EXISTED);
+
+        //get OTP
+        String otp = OtpUtils.create();
+        if (Objects.isNull(otp)) throw new AppException(ErrorCode.OTP_INVALID);
+
+        //save otp into redis
+        redisService.saveKey(request.getEmail(), otp, 75000L);
+
+        //send mail
+        mailService.send(request.getEmail(), "OTP - Sportman", otp);
+
     }
 
     private String buildScope(User user) {

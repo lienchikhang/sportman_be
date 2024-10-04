@@ -3,10 +3,7 @@ package com.sportman.services.imlps;
 import com.sportman.dto.request.OrderCreateRequest;
 import com.sportman.dto.response.OrderResponse;
 import com.sportman.dto.response.page.OrderPageResponse;
-import com.sportman.entities.Order;
-import com.sportman.entities.OrderDetail;
-import com.sportman.entities.OrderDetailId;
-import com.sportman.entities.User;
+import com.sportman.entities.*;
 import com.sportman.enums.OrderStatus;
 import com.sportman.exceptions.AppException;
 import com.sportman.exceptions.ErrorCode;
@@ -85,11 +82,16 @@ public class OrderServiceImpl implements OrderService {
         List<OrderDetail> orderDetails = new ArrayList<>();
 
         request.getOrders().forEach(order -> {
+
+            //check product
+            Product product = productRepository.findById(order.getProductId()).orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
+
             //create orderDetails
             OrderDetail orderDetail = OrderDetail.builder()
                     .size(sizeRepository.findById(order.getSizeTag()).orElseThrow(() -> new AppException(ErrorCode.SIZE_NOT_FOUND)))
-                    .product(productRepository.findById(order.getProductId()).orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND)))
+                    .product(product)
                     .amount(order.getAmount())
+                    .price(product.getProductPrice())
                     .build();
             orderDetails.add(orderDetail);
         });

@@ -16,6 +16,26 @@ spring:
 #        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
       ddl-auto: update
     show-sql: true
+  data:
+    redis:
+      host: localhost
+      port: 6379
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: chikhang11a18@gmail.com
+    password: "iyfo qifi wtov gwlq"
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          ssl:
+            trust: smtp.gmail.com
+
+
 
 logging:
   level:
@@ -29,3 +49,15 @@ jwt:
 
 cloudinary:
   apiKey: "aGlS8yvKAnYu1JBtT_hzLvFCunQ"
+
+
+payment:
+  vnpay:
+    vnp_TmnCode: "C6X78S4Y"
+    vnp_HashSecret: "Y8TQMV9ZHUEOV3IKRD3YIDT75VX8CIA6"
+    vnp_Url: "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html"
+    vnp_Version: "2.1.0"
+    vnp_Command: "pay"
+    vnp_OrderInfo: "THANH TOAN CHO HE THONG SPORTMAN"
+    vnp_ReturnUrl: "http://localhost:8080/sportman/vnpay/vn-pay-callback"
+    vnp_CurrCode: "VND"

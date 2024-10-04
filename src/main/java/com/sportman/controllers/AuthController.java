@@ -1,23 +1,32 @@
 package com.sportman.controllers;
 
 import com.nimbusds.jose.JOSEException;
-import com.sportman.dto.request.AuthIntrospectRequest;
-import com.sportman.dto.request.AuthLoginRequest;
-import com.sportman.dto.request.AuthLogoutRequest;
-import com.sportman.dto.request.AuthRequest;
+import com.sportman.dto.request.*;
 import com.sportman.dto.response.*;
 import com.sportman.services.interfaces.AuthService;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+import java.security.Principal;
 import java.text.ParseException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
+@Slf4j
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
@@ -61,4 +70,42 @@ public class AuthController {
                 .build();
     }
 
+    @PostMapping("/get-otp")
+    public ApiResponse<Void> getOtp(
+            @RequestBody AuthOtpRequest request
+    ) {
+
+        authService.getOTP(request);
+
+        return ApiResponse.<Void>builder()
+                .statusCode(200)
+                .build();
+    }
+
+    @GetMapping("/google/login")
+    public void googleLogin(HttpServletResponse response) throws IOException {
+        response.sendRedirect("/sportman/oauth2/authorization/google");
+    }
+
+    @GetMapping("/google/redirect")
+    public void googleLoginRedirect(Principal principal, HttpServletResponse response) throws IOException {
+        // Lấy thông tin người dùng từ request
+//        Map<String, Object> userAttributes = userDetails;
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication.getPrincipal() instanceof OAuth2User) {
+            OAuth2User oauth2User = (OAuth2User) authentication.getPrincipal();
+            log.warn(oauth2User.getName());
+            response.sendRedirect("http://localhost:3000/login?user=");
+        }
+
+
+//        log.warn(authentication.getPrincipal());
+        // Tạo token (ví dụ: JWT)
+//        String token = tokenService.createToken(userAttributes);
+
+        // Chuyển hướng về client với thông tin user và token
+        response.sendRedirect("http://localhost:3000/login/failure");
+    }
 }

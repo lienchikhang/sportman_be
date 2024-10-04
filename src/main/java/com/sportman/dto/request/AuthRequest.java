@@ -35,4 +35,7 @@ public class AuthRequest {
     @NotEmpty(message = "")
     String lastName;
 
+    @NotEmpty(message = "OTP_NOT_EMPTY")
+    String otp;
+
 }

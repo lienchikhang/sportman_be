@@ -14,14 +14,17 @@ import com.sportman.mappers.UserMapper;
 import com.sportman.repositories.CartRepository;
 import com.sportman.repositories.RoleRepository;
 import com.sportman.repositories.UserRepository;
+import com.sportman.services.interfaces.RedisService;
 import com.sportman.services.interfaces.UserService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
+import java.util.Objects;
 
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -33,15 +36,24 @@ public class UserServiceImpl implements UserService {
     PasswordEncoder passwordEncoder;
     RoleRepository roleRepository;
     CartRepository cartRepository;
+    RedisService redisService;
 
     //mappers
     UserMapper userMapper;
     AuthMapper authMapper;
 
     @Override
+    @Transactional
     public AuthResponse create(AuthRequest request) {
+
         //check username & email
         if(userRepository.existsByUsernameOrEmail(request.getUsername(), request.getEmail())) throw new AppException(ErrorCode.USER_EXISTED);
+
+        //check otp
+        if (Objects.isNull(redisService.getValue(request.getEmail()))) throw new AppException(ErrorCode.OTP_NOT_MATCH);
+
+        if (!redisService.getValue(request.getEmail()).equals(request.getOtp()))
+            throw new AppException(ErrorCode.OTP_NOT_MATCH);
 
         //create new user
         User newUser = userMapper.toUser(request);
@@ -70,6 +82,9 @@ public class UserServiceImpl implements UserService {
                 .id(savedUser.getUsername())
                 .user(savedUser)
                 .build());
+
+        //delete otp
+        redisService.delete(savedUser.getEmail());
 
         //save user
         return authMapper.toAuthRespones(savedUser);

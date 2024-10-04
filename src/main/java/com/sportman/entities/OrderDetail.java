@@ -36,4 +36,7 @@ public class OrderDetail implements Serializable {
     @Column(name = "amount")
     Integer amount;
 
+    @Column(name = "price")
+    Integer price;
+
 }
