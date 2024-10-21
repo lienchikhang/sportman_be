@@ -15,4 +15,5 @@ public interface RateRepository extends JpaRepository<Rate, RateId> {
 
     public Page<Rate> findAllByProduct(Pageable pageable, Product product);
 
+    public long countAllByProduct(Product product);
 }

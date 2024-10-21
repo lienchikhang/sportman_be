@@ -43,6 +43,8 @@ public class SecurityConfig {
             "/sizes",
             "/colors",
             "/products",
+            "/rates",
+            "/rates/*",
             "/products/get-list-name",
             "/products/get-by-id/*",
             "/products/get-rates-by-id/*",

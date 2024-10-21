@@ -2,7 +2,9 @@ package com.sportman.services.imlps;
 
 import com.sportman.dto.request.RateCreateRequest;
 import com.sportman.dto.response.RateCreateResponse;
+import com.sportman.dto.response.RateResponse;
 import com.sportman.dto.response.UserCommentResponse;
+import com.sportman.dto.response.page.RatePageResponse;
 import com.sportman.entities.Product;
 import com.sportman.entities.Rate;
 import com.sportman.entities.RateId;
@@ -18,6 +20,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -26,6 +29,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -72,5 +76,57 @@ public class RateServiceImpl implements RateService {
                 .build());
 
         return res;
+    }
+
+    @Override
+    public RatePageResponse get(Pageable pageable) {
+
+        long totalElement = rateRepository.count();
+        List<RateResponse> rates =  rateRepository.findAll(pageable).map(rate -> {
+            RateResponse rateResponse = rateMapper.toResponse(rate);
+            rateResponse.setUser(UserCommentResponse
+                    .builder()
+                    .username(rate.getUser().getUsername())
+                            .fullName(rate.getUser().getFirstName() +
+                                    rate.getUser().getLastName())
+                    .build());
+
+            return rateResponse;
+        }).toList();
+
+
+        return RatePageResponse.builder()
+                .rates(rates)
+                .currentPage(pageable.getPageNumber() + 1)
+                .totalPage(Math.ceilDiv(totalElement, pageable.getPageSize()))
+                .totalElements(totalElement)
+                .build();
+
+    }
+
+    @Override
+    public RatePageResponse getByProductId(Pageable pageable, String productId) {
+
+        Product product = productRepository.findById(productId).orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
+        long totalElement = rateRepository.countAllByProduct(product);
+
+        List<RateResponse> rates =  rateRepository.findAllByProduct(pageable, product).map(rate -> {
+            RateResponse rateResponse = rateMapper.toResponse(rate);
+            rateResponse.setUser(UserCommentResponse
+                    .builder()
+                    .username(rate.getUser().getUsername())
+                    .fullName(rate.getUser().getFirstName() +
+                            rate.getUser().getLastName())
+                    .build());
+
+            return rateResponse;
+        }).toList();
+
+        return RatePageResponse.builder()
+                .rates(rates)
+                .currentPage(pageable.getPageNumber() + 1)
+                .totalPage(Math.ceilDiv(totalElement, pageable.getPageSize()))
+                .totalElements(totalElement)
+                .build();
     }
 }

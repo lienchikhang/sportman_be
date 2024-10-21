@@ -10,5 +10,6 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserCommentResponse {
     String username;
+    String fullName;
     String avatar;
 }

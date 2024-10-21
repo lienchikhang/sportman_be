@@ -106,17 +106,21 @@ public class ProductServiceImpl implements ProductService {
         }
 
         List<Product> products = productRepository.findAll(productSpec, pageable).toList();
-        List<ProductGetResponse> productGetResponseList = products.stream().map(pro -> productMapper.toGetResponse(pro)).toList();
+        List<ProductGetResponse> productGetResponseList = products.stream().map(productMapper::toGetResponse).toList();
 
         for (int i = 0; i < products.size(); i++) {
             List<Color> colors = products.get(i).getColors();
             productGetResponseList.get(i).setColors(colors.stream().map(color -> color.getColorHex()).toList());
         }
 
+        for (int i = 0; i < productGetResponseList.size(); i++) {
+            log.info("item {}", productGetResponseList.get(i).getProductName());
+        }
+
         long totalPros = productRepository.count(productSpec);
 
         return ProductPageResponse.builder()
-                .products(Collections.singletonList(productGetResponseList))
+                .products(new ArrayList<>(productGetResponseList))
                 .currentPage(pageable.getPageNumber() + 1)
                 .totalPage(Math.ceilDiv(totalPros, pageable.getPageSize()))
                 .totalElements(totalPros)
