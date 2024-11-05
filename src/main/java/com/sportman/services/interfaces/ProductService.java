@@ -8,6 +8,7 @@ import com.sportman.dto.response.ProductGetDetailResponse;
 import com.sportman.dto.response.page.ProductPageResponse;
 import com.sportman.dto.response.page.RatePageResponse;
 import com.sportman.entities.Product;
+import com.sportman.enums.ProductLeague;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -23,7 +24,9 @@ public interface ProductService {
                                    Integer price,
                                    String sizes,
                                    Boolean isDeleted,
-                                   String sort);
+                                   String sort,
+                                   ProductLeague league
+    );
 
     public ProductPageResponse getListName(Pageable pageable, String name);
 

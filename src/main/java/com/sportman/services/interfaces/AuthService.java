@@ -13,7 +13,9 @@ public interface AuthService {
 
     public AuthLoginResponse logIn(AuthLoginRequest request);
 
-    public AuthIntrospectResponse introspectToken(AuthIntrospectRequest request);
+    public AuthIntrospectResponse introspectToken(String authorization);
+
+    public AuthIntrospectResponse introspectRefreshToken(AuthIntrospectRequest request);
 
     public void logOut(AuthLogoutRequest request) throws JOSEException, ParseException;
 

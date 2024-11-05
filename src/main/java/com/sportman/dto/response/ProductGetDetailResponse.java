@@ -21,5 +21,5 @@ public class ProductGetDetailResponse {
     List<String> colors;
     List<Stocks> stocks;
     List<Integer> seasons;
-
+    String club;
 }

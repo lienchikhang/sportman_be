@@ -34,6 +34,12 @@ public class Order implements Serializable {
     @Enumerated(EnumType.STRING)
     OrderStatus status;
 
+    @Column(name = "address")
+    String address;
+
+    @Column(name = "receiver")
+    String receiver;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     User user;

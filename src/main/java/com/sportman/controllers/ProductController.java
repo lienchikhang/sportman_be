@@ -10,6 +10,7 @@ import com.sportman.dto.response.ProductNameResponse;
 import com.sportman.dto.response.page.ProductPageResponse;
 import com.sportman.dto.response.page.RatePageResponse;
 import com.sportman.entities.Product;
+import com.sportman.enums.ProductLeague;
 import com.sportman.services.interfaces.ProductService;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
@@ -41,14 +42,23 @@ public class ProductController {
             @RequestParam(name = "season", required = false) String season,
             @RequestParam(name = "price", required = false) Integer price,
             @RequestParam(name = "size", required = false) String sizes,
-            @RequestParam(name = "sort", required = false) String sort
+            @RequestParam(name = "sort", required = false) String sort,
+            @RequestParam(name = "league", required = false) ProductLeague league
             ) {
         Pageable pageable = PageRequest.of(page - 1, pageSize);
 
         return ApiResponse.<ProductPageResponse>builder()
                 .statusCode(200)
                 .content(productService
-                        .get(pageable, name, club, season, price, sizes, false, sort))
+                        .get(pageable,
+                                name,
+                                club,
+                                season,
+                                price,
+                                sizes, false,
+                                sort,
+                                league
+                        ))
                 .build();
     }
 

@@ -105,6 +105,8 @@ public class OrderServiceImpl implements OrderService {
         //create new order
         Order newOrder = Order.builder().build();
         newOrder.setUser(user);
+        newOrder.setAddress(request.getAddress());
+        newOrder.setReceiver(request.getReceiver());
         newOrder.setStatus(OrderStatus.UNPAID);
         newOrder.setOrderDetails(orderDetails);
 

@@ -12,4 +12,6 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class OrderCreateRequest {
     List<OrderDetailCreateRequest> orders;
+    String address;
+    String receiver;
 }

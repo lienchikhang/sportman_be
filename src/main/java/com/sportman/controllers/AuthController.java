@@ -52,11 +52,22 @@ public class AuthController {
     }
 
     @PostMapping("/introspect-token")
-    public ApiResponse<AuthIntrospectResponse> introSpect(@RequestBody @Valid AuthIntrospectRequest request) {
+    public ApiResponse<AuthIntrospectResponse> introSpect(@RequestHeader("Authorization") String authorization) {
 
         return ApiResponse.<AuthIntrospectResponse>builder()
                 .statusCode(200)
-                .content( authService.introspectToken(request))
+                .content( authService.introspectToken(authorization))
+                .build();
+    }
+
+    @PostMapping("/introspect-refresh-token")
+    public ApiResponse<AuthIntrospectResponse> introSpectRefresh(@RequestBody @Valid AuthIntrospectRequest request) {
+
+        log.info("token: {}", request.getToken());
+
+        return ApiResponse.<AuthIntrospectResponse>builder()
+                .statusCode(200)
+                .content( authService.introspectRefreshToken(request))
                 .build();
     }
 

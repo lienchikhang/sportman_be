@@ -3,11 +3,14 @@ package com.sportman.controllers;
 import com.sportman.dto.request.SeasonCreateRequest;
 import com.sportman.dto.response.ApiResponse;
 import com.sportman.dto.response.SeasonResponse;
+import com.sportman.dto.response.page.SeasonPageResponse;
 import com.sportman.services.interfaces.SeasonService;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,12 +24,16 @@ public class SeasonController {
     SeasonService seasonService;
 
     @GetMapping
-    public ApiResponse<List<SeasonResponse>> getAll(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "4") int pageSize
+    public ApiResponse<SeasonPageResponse> getAll(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "12") int pageSize
     ) {
-        return ApiResponse.<List<SeasonResponse>>builder()
-                .content(seasonService.getAll(page, pageSize))
+
+        Pageable pageable = PageRequest.of(page - 1, pageSize);
+
+        return ApiResponse.<SeasonPageResponse>builder()
+                .statusCode(200)
+                .content(seasonService.getAll(pageable))
                 .build();
     }
 

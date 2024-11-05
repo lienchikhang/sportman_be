@@ -18,6 +18,7 @@ public enum ErrorCode {
     BAD_REQUEST(1004, "Bad request", 400),
     WRONG_TOKEN(1022, "Token type invalid", 400),
     TOKEN_NOT_EMPTY(1023, "Token must not be empty", 400),
+    REFRESH_EXPIRED(1038, "LoginExpired", 401),
 
     //club
     CLUB_EXISTED(1003, "Club has already existed", 400),

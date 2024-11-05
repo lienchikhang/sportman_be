@@ -2,6 +2,7 @@ package com.sportman.entities;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.CreationTimestamp;
@@ -35,7 +36,7 @@ public class Rate implements Serializable {
     Integer rateStar;
 
     @Lob
-    @Column(name = "rate_comment")
+    @Column(name = "rate_comment", columnDefinition = "TEXT")
     String rateComment;
 
     @Column(name = "created_at")

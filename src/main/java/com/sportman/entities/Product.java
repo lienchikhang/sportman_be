@@ -1,5 +1,6 @@
 package com.sportman.entities;
 
+import com.sportman.enums.ProductLeague;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -48,6 +49,11 @@ public class Product extends AbstractEntity implements Serializable {
     @Lob
     @Column(name = "back_image", nullable = true)
     String backImage;
+
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    @Column(name = "league")
+    ProductLeague league;
 
     @ManyToOne
     Season season;

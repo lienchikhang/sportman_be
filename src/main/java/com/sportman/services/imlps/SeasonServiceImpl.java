@@ -2,6 +2,7 @@ package com.sportman.services.imlps;
 
 import com.sportman.dto.request.SeasonCreateRequest;
 import com.sportman.dto.response.SeasonResponse;
+import com.sportman.dto.response.page.SeasonPageResponse;
 import com.sportman.entities.Season;
 import com.sportman.entities.SeasonId;
 import com.sportman.exceptions.AppException;
@@ -27,11 +28,20 @@ public class SeasonServiceImpl implements SeasonService {
     SeasonMapper seasonMapper;
 
     @Override
-    public List<SeasonResponse> getAll(int page, int pageSize) {
-        Pageable pageable = PageRequest.of(page, pageSize);
-        return seasonRepository.findAllByIsDeletedFalse(pageable)
+    public SeasonPageResponse getAll(Pageable pageable) {
+
+        List<SeasonResponse> seasons = seasonRepository.findAllByIsDeletedFalse(pageable)
                 .stream()
                 .map(seasonMapper::toSeasonResponse).toList();
+
+        long totalEle = seasonRepository.count();
+
+        return SeasonPageResponse.builder()
+                .seasons(seasons)
+                .currentPage(pageable.getPageNumber() + 1)
+                .totalElements(totalEle)
+                .totalPage(Math.ceilDiv(totalEle, pageable.getPageSize()))
+                .build();
     }
 
     @Override

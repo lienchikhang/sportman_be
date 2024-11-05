@@ -32,7 +32,7 @@ public class CustomJwtDecoder implements JwtDecoder {
     public Jwt decode(String token) throws JwtException {
 
         try {
-            AuthIntrospectResponse res = authService.introspectToken(AuthIntrospectRequest.builder().token(token).build());
+            AuthIntrospectResponse res = authService.introspectToken(token);
             if (!res.isAuth()) throw new JwtException("Token is invalid");
         } catch (JwtException e) {
             throw new JwtException(e.getMessage());

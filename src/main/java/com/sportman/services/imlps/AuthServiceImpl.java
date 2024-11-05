@@ -32,6 +32,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cglib.core.Local;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -95,13 +96,22 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public AuthIntrospectResponse introspectToken(AuthIntrospectRequest request)  {
-
-        //get token
-        String token = request.getToken();
+    public AuthIntrospectResponse introspectToken(String authorization)  {
 
         try {
-            SignedJWT signedJWT = verifyToken(token);
+            SignedJWT signedJWT = verifyToken(authorization);
+
+        } catch (JOSEException | ParseException e) {
+            return AuthIntrospectResponse.builder().auth(false).build();
+        }
+
+        return AuthIntrospectResponse.builder().auth(true).build();
+    }
+
+    @Override
+    public AuthIntrospectResponse introspectRefreshToken(AuthIntrospectRequest request) {
+        try {
+            SignedJWT signedJWT = verifyRefreshToken(request.getToken());
 
         } catch (JOSEException | ParseException e) {
             return AuthIntrospectResponse.builder().auth(false).build();
@@ -117,7 +127,7 @@ public class AuthServiceImpl implements AuthService {
         String token = request.getToken();
 
         //get signedJWT
-        SignedJWT signedJWT = verifyToken(token);
+        SignedJWT signedJWT = verifyTokenLogout(token);
 
         //get necessary claims
         String refreshId = signedJWT.getJWTClaimsSet().getClaim("refreshId").toString();
@@ -215,7 +225,7 @@ public class AuthServiceImpl implements AuthService {
                 .issuer("sportman")
                 .issueTime(new Date())
                 .subject(user.getUsername())
-                .expirationTime(new Date(Instant.now().plus(30, ChronoUnit.MINUTES).toEpochMilli()))
+                .expirationTime(new Date(Instant.now().plus(1, ChronoUnit.MINUTES).toEpochMilli()))
                 .claim("refreshId", refreshId)
                 .claim("scope", buildScope(user))
                 .claim("userId", user.getId())
@@ -274,6 +284,24 @@ public class AuthServiceImpl implements AuthService {
 
     }
 
+    private SignedJWT verifyTokenLogout(String token) throws JOSEException, ParseException {
+
+        JWSVerifier jwsVerifier = new MACVerifier(secretKey.getBytes());
+
+        SignedJWT signedJWT = parseIntoSignJWT(token);
+
+        //check:: has refreshId existed in blacklist
+        if (blackListRepository.existsById(signedJWT.getJWTClaimsSet().getClaim("refreshId").toString()))
+            throw new AppException(ErrorCode.UN_AUTHENTICATED);
+
+//        boolean verify = signedJWT.verify(jwsVerifier);
+
+//        if (!verify) throw new AppException(ErrorCode.UN_AUTHENTICATED);
+
+        return signedJWT;
+
+    }
+
     private SignedJWT verifyRefreshToken(String token) throws JOSEException, ParseException {
 
         JWSVerifier jwsVerifier = new MACVerifier(secretKey.getBytes());
@@ -282,14 +310,13 @@ public class AuthServiceImpl implements AuthService {
 
         //check:: has refreshId existed in blacklist
         if (blackListRepository.existsById(signedJWT.getJWTClaimsSet().getJWTID()))
-            throw new AppException(ErrorCode.UN_AUTHENTICATED);;
-
+            throw new AppException(ErrorCode.REFRESH_EXPIRED);
 
         Date expiredTime = signedJWT.getJWTClaimsSet().getExpirationTime();
 
         boolean verify = signedJWT.verify(jwsVerifier);
 
-        if (!(verify && expiredTime.after(new Date()))) throw new AppException(ErrorCode.UN_AUTHENTICATED);
+        if (!(verify && expiredTime.after(new Date()))) throw new AppException(ErrorCode.REFRESH_EXPIRED);
 
         return signedJWT;
 

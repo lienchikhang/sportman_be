@@ -7,6 +7,7 @@ import com.sportman.dto.response.*;
 import com.sportman.dto.response.page.ProductPageResponse;
 import com.sportman.dto.response.page.RatePageResponse;
 import com.sportman.entities.*;
+import com.sportman.enums.ProductLeague;
 import com.sportman.exceptions.AppException;
 import com.sportman.exceptions.ErrorCode;
 import com.sportman.mappers.ColorMapper;
@@ -72,7 +73,8 @@ public class ProductServiceImpl implements ProductService {
             Integer price,
             String sizes,
             Boolean isDeleted,
-            String sort
+            String sort,
+            ProductLeague league
     ) {
 
         Specification<Product> productSpec = Specification.where(ProductSpecification.hasDeleted(isDeleted));
@@ -103,6 +105,10 @@ public class ProductServiceImpl implements ProductService {
 
         if (Objects.nonNull(sort)) {
             productSpec = productSpec.and(ProductSpecification.hasSort(sort.toLowerCase()));
+        }
+
+        if (Objects.nonNull(league)) {
+            productSpec = productSpec.and(ProductSpecification.hasLeague(league));
         }
 
         List<Product> products = productRepository.findAll(productSpec, pageable).toList();
@@ -142,7 +148,7 @@ public class ProductServiceImpl implements ProductService {
                 .totalElements(productRepository.count(specs))
                 .totalPage(Math.ceilDiv(productRepository.count(specs), pageable.getPageSize()))
                 .currentPage(pageable.getPageNumber() + 1)
-                .products(Collections.singletonList(pros))
+                .products(new ArrayList<>(pros))
                 .build();
     }
 
@@ -372,6 +378,9 @@ public class ProductServiceImpl implements ProductService {
 
         //get colors
         res.setColors(product.getColors().stream().map(color -> color.getColorHex()).toList());
+
+        //get club
+        res.setClub(product.getClub().getClubName());
 
         //get season
         Season productSeason = product.getSeason();

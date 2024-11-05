@@ -56,6 +56,7 @@ public class SecurityConfig {
             "/users/create",
             "/auth/login",
             "/auth/introspect-token",
+            "/auth/introspect-refresh-token",
             "/auth/logout",
             "/auth/refresh",
             "/auth/register",

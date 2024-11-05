@@ -2,6 +2,7 @@ package com.sportman.services.specifications;
 
 import com.sportman.entities.Product;
 import com.sportman.entities.ProductSize;
+import com.sportman.enums.ProductLeague;
 import jakarta.persistence.criteria.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.domain.Specification;
@@ -161,6 +162,23 @@ public class ProductSpecification {
 
             return criteriaBuilder.conjunction();
 
+        };
+    }
+
+    public static Specification<Product> hasLeague(ProductLeague league) {
+        return (root, query, criteriaBuilder) -> {
+
+            if (Objects.isNull(league)) return criteriaBuilder.conjunction();
+
+            query.multiselect(
+                    root.get("id"),
+                    root.get("productName"),
+                    root.get("productPrice"),
+                    root.get("frontImage"),
+                    root.get("backImage"),
+                    root.get("colors"));
+
+            return criteriaBuilder.equal(root.get("league"), league.toString());
         };
     }
 
