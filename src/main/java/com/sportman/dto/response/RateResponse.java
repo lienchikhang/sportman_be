@@ -15,5 +15,6 @@ public class RateResponse {
     UserCommentResponse user;
     String rateComment;
     LocalDate createdAt;
+    Integer rateStar;
 
 }

@@ -17,4 +17,5 @@ public class RatePageResponse {
     Integer currentPage;
     Long totalPage;
     Long totalElements;
+    double sumRate;
 }

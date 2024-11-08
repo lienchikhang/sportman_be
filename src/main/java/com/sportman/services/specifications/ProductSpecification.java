@@ -165,7 +165,7 @@ public class ProductSpecification {
         };
     }
 
-    public static Specification<Product> hasLeague(ProductLeague league) {
+    public static Specification<Product> hasLeague(String league) {
         return (root, query, criteriaBuilder) -> {
 
             if (Objects.isNull(league)) return criteriaBuilder.conjunction();
@@ -178,7 +178,7 @@ public class ProductSpecification {
                     root.get("backImage"),
                     root.get("colors"));
 
-            return criteriaBuilder.equal(root.get("league"), league.toString());
+            return criteriaBuilder.equal(root.get("league"), ProductLeague.valueOf(league));
         };
     }
 

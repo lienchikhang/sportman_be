@@ -10,7 +10,5 @@ public interface RateService {
 
     public RateCreateResponse create(RateCreateRequest request);
 
-    public RatePageResponse get(Pageable pageable);
-
-    public RatePageResponse getByProductId(Pageable pageable, String productId);
+    public RatePageResponse getByProductId(Pageable pageable, String productId, int rate);
 }

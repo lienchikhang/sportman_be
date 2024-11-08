@@ -225,7 +225,7 @@ public class AuthServiceImpl implements AuthService {
                 .issuer("sportman")
                 .issueTime(new Date())
                 .subject(user.getUsername())
-                .expirationTime(new Date(Instant.now().plus(1, ChronoUnit.MINUTES).toEpochMilli()))
+                .expirationTime(new Date(Instant.now().plus(50, ChronoUnit.MINUTES).toEpochMilli()))
                 .claim("refreshId", refreshId)
                 .claim("scope", buildScope(user))
                 .claim("userId", user.getId())
@@ -238,7 +238,7 @@ public class AuthServiceImpl implements AuthService {
                 .issuer("sportman")
                 .issueTime(new Date())
                 .subject(user.getUsername())
-                .expirationTime(new Date(Instant.now().plus(30, ChronoUnit.MINUTES).toEpochMilli()))
+                .expirationTime(new Date(Instant.now().plus(120, ChronoUnit.MINUTES).toEpochMilli()))
                 .jwtID(UUID.randomUUID().toString())
                 .claim("userId", user.getId())
                 .build();

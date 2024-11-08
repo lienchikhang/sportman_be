@@ -1,6 +1,7 @@
 package com.sportman.dto.request;
 
 import com.sportman.annotations.ValidSeason;
+import com.sportman.enums.ProductLeague;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
@@ -41,5 +42,8 @@ public class ProductCreateRequest {
     List<String> colors;
 
     Integer stock;
+
+    ProductLeague league;
+
 
 }

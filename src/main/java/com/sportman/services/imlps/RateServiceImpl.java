@@ -16,20 +16,23 @@ import com.sportman.repositories.ProductRepository;
 import com.sportman.repositories.RateRepository;
 import com.sportman.repositories.UserRepository;
 import com.sportman.services.interfaces.RateService;
+import com.sportman.services.specifications.RateSpecification;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
 @Service
@@ -47,6 +50,7 @@ public class RateServiceImpl implements RateService {
 
     @Override
     @PreAuthorize("hasAuthority('ADD_COMMENT')")
+    @Transactional
     public RateCreateResponse create(RateCreateRequest request) {
 
         //check product exist
@@ -68,6 +72,12 @@ public class RateServiceImpl implements RateService {
                 .userId(user.getId())
                 .build());
 
+        //update product sum rate
+        long totalElement = rateRepository.count(Specification.where(RateSpecification.hasProduct(product)));
+        double sumRate = rateRepository.findAll(Specification.where(RateSpecification.hasProduct(product))).stream().mapToDouble(Rate::getRateStar).sum();
+        product.setSumRate(sumRate / totalElement);
+        productRepository.save(product);
+
         RateCreateResponse res = rateMapper.toCreateResponse(rateRepository.save(newRate));
 
         res.setUser(UserCommentResponse.builder()
@@ -78,52 +88,30 @@ public class RateServiceImpl implements RateService {
         return res;
     }
 
-    @Override
-    public RatePageResponse get(Pageable pageable) {
-
-        long totalElement = rateRepository.count();
-        List<RateResponse> rates =  rateRepository.findAll(pageable).map(rate -> {
-            RateResponse rateResponse = rateMapper.toResponse(rate);
-            rateResponse.setUser(UserCommentResponse
-                    .builder()
-                    .username(rate.getUser().getUsername())
-                            .fullName(rate.getUser().getFirstName() +
-                                    rate.getUser().getLastName())
-                    .build());
-
-            return rateResponse;
-        }).toList();
-
-
-        return RatePageResponse.builder()
-                .rates(rates)
-                .currentPage(pageable.getPageNumber() + 1)
-                .totalPage(Math.ceilDiv(totalElement, pageable.getPageSize()))
-                .totalElements(totalElement)
-                .build();
-
-    }
 
     @Override
-    public RatePageResponse getByProductId(Pageable pageable, String productId) {
+    public RatePageResponse getByProductId(Pageable pageable, String productId, int rateNum) {
 
         Product product = productRepository.findById(productId).orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
-        long totalElement = rateRepository.countAllByProduct(product);
+        Specification specs = Specification.where(RateSpecification.hasProduct(product)).and(RateSpecification.hasRate(rateNum));
 
-        List<RateResponse> rates =  rateRepository.findAllByProduct(pageable, product).map(rate -> {
-            RateResponse rateResponse = rateMapper.toResponse(rate);
+        long totalElement = rateRepository.count(Specification.where(RateSpecification.hasProduct(product)));
+
+        Page<Rate> ratePage = rateRepository.findAll(specs, pageable);
+        List<RateResponse> rates = ratePage.map(rate -> {
+         RateResponse rateResponse = rateMapper.toResponse(rate);
             rateResponse.setUser(UserCommentResponse
                     .builder()
                     .username(rate.getUser().getUsername())
                     .fullName(rate.getUser().getFirstName() +
-                            rate.getUser().getLastName())
+                            (rate.getUser().getLastName()))
                     .build());
-
             return rateResponse;
         }).toList();
 
         return RatePageResponse.builder()
                 .rates(rates)
+                .sumRate(product.getSumRate())
                 .currentPage(pageable.getPageNumber() + 1)
                 .totalPage(Math.ceilDiv(totalElement, pageable.getPageSize()))
                 .totalElements(totalElement)

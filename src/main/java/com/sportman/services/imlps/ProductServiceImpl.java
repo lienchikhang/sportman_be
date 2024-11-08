@@ -53,7 +53,6 @@ public class ProductServiceImpl implements ProductService {
     SizeRepository sizeRepository;
     ColorRepository colorRepository;
     ProductSizeRepository productSizeRepository;
-    RateRepository rateRepository;
 
     //mappers
     ProductMapper productMapper;
@@ -74,7 +73,7 @@ public class ProductServiceImpl implements ProductService {
             String sizes,
             Boolean isDeleted,
             String sort,
-            ProductLeague league
+            String league
     ) {
 
         Specification<Product> productSpec = Specification.where(ProductSpecification.hasDeleted(isDeleted));
@@ -111,6 +110,8 @@ public class ProductServiceImpl implements ProductService {
             productSpec = productSpec.and(ProductSpecification.hasLeague(league));
         }
 
+        log.info("league {}", league);
+
         List<Product> products = productRepository.findAll(productSpec, pageable).toList();
         List<ProductGetResponse> productGetResponseList = products.stream().map(productMapper::toGetResponse).toList();
 
@@ -119,9 +120,9 @@ public class ProductServiceImpl implements ProductService {
             productGetResponseList.get(i).setColors(colors.stream().map(color -> color.getColorHex()).toList());
         }
 
-        for (int i = 0; i < productGetResponseList.size(); i++) {
-            log.info("item {}", productGetResponseList.get(i).getProductName());
-        }
+//        for (int i = 0; i < productGetResponseList.size(); i++) {
+//            log.info("item {}", productGetResponseList.get(i).getProductName());
+//        }
 
         long totalPros = productRepository.count(productSpec);
 
@@ -197,6 +198,7 @@ public class ProductServiceImpl implements ProductService {
         newProduct.setProductName(newProduct.getProductName().toLowerCase().replaceAll(" ", "-"));
         newProduct.setSeason(season);
         newProduct.setClub(club);
+        newProduct.setLeague(request.getLeague());
         newProduct.setIsDeleted(false);
 
         //set images
@@ -217,6 +219,9 @@ public class ProductServiceImpl implements ProductService {
                     .sizeTag(stock.getSizeTag().getSizeTag())
                     .build());
         });
+
+        //set sum rate
+        newProduct.setSumRate(0.0);
 
         return productMapper.toResponse(productRepository.save(newProduct));
     }
@@ -392,34 +397,6 @@ public class ProductServiceImpl implements ProductService {
         return res;
 
     }
-
-    @Override
-    public RatePageResponse getRatesByProductId(String productId, Pageable pageable) {
-
-        //check product exist
-        Product product = productRepository.findById(productId).orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
-
-        List<RateResponse> rates = rateRepository.findAllByProduct(pageable, product)
-                .stream().map(rate -> {
-                    RateResponse rs = rateMapper.toResponse(rate);
-                    rs.setUser(UserCommentResponse.builder()
-                            .avatar(rate.getUser().getAvatar())
-                            .username(rate.getUser().getUsername())
-                            .build());
-                    return rs;
-                })
-                .toList();
-
-        long totalRates = rateRepository.count();
-
-        return RatePageResponse.builder()
-                .rates(rates)
-                .currentPage(pageable.getPageNumber() + 1)
-                .totalElements(totalRates)
-                .totalPage(Math.ceilDiv(totalRates, pageable.getPageSize()))
-                .build();
-    }
-
 
     private byte[] compressImage(BufferedImage orgImage, String format) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();

@@ -43,8 +43,10 @@ public class ProductController {
             @RequestParam(name = "price", required = false) Integer price,
             @RequestParam(name = "size", required = false) String sizes,
             @RequestParam(name = "sort", required = false) String sort,
-            @RequestParam(name = "league", required = false) ProductLeague league
+            @RequestParam(name = "league", required = false) String league
             ) {
+
+
         Pageable pageable = PageRequest.of(page - 1, pageSize);
 
         return ApiResponse.<ProductPageResponse>builder()
@@ -87,18 +89,18 @@ public class ProductController {
                 .build();
     }
 
-    @GetMapping("/get-rates-by-id/{productId}")
-    public ApiResponse<RatePageResponse> getRatesById(
-            @PathVariable(name = "productId", required = true) String productId,
-            @RequestParam(name = "page", defaultValue = "1") int page,
-            @RequestParam(name = "pageSize", defaultValue = "6") int pageSize
-    ) {
-        Pageable pageable = PageRequest.of(page - 1, pageSize);
-        return ApiResponse.<RatePageResponse>builder()
-                .statusCode(200)
-                .content(productService.getRatesByProductId(productId, pageable))
-                .build();
-    }
+//    @GetMapping("/get-rates-by-id/{productId}")
+//    public ApiResponse<RatePageResponse> getRatesById(
+//            @PathVariable(name = "productId", required = true) String productId,
+//            @RequestParam(name = "page", defaultValue = "1") int page,
+//            @RequestParam(name = "pageSize", defaultValue = "6") int pageSize
+//    ) {
+//        Pageable pageable = PageRequest.of(page - 1, pageSize);
+//        return ApiResponse.<RatePageResponse>builder()
+//                .statusCode(200)
+//                .content(productService.getRatesByProductId(productId, pageable))
+//                .build();
+//    }
 
     @PostMapping("/create")
     public ApiResponse<ProductCreateResponse> create(

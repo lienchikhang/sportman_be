@@ -25,7 +25,7 @@ public interface ProductService {
                                    String sizes,
                                    Boolean isDeleted,
                                    String sort,
-                                   ProductLeague league
+                                   String league
     );
 
     public ProductPageResponse getListName(Pageable pageable, String name);
@@ -42,5 +42,5 @@ public interface ProductService {
 
     public ProductGetDetailResponse getById(String productId);
 
-    public RatePageResponse getRatesByProductId(String productId, Pageable pageable);
+//    public RatePageResponse getRatesByProductId(String productId, Pageable pageable);
 }

@@ -27,6 +27,7 @@ public class RateController {
     public ApiResponse<RatePageResponse> getByProductId(
             @RequestParam(name = "page", defaultValue = "1") int page,
             @RequestParam(name = "pageSize", defaultValue = "6") int pageSize,
+            @RequestParam(name = "rate", defaultValue = "0") int rate,
             @PathVariable(name = "productId", required = true) String productId
     ) {
 
@@ -34,23 +35,23 @@ public class RateController {
 
         return ApiResponse.<RatePageResponse>builder()
                 .statusCode(200)
-                .content(rateService.getByProductId(pageable, productId))
+                .content(rateService.getByProductId(pageable, productId, rate))
                 .build();
     }
 
-    @GetMapping
-    public ApiResponse<RatePageResponse> get(
-            @RequestParam(name = "page", defaultValue = "1") int page,
-            @RequestParam(name = "pageSize", defaultValue = "6") int pageSize
-    ) {
-
-        Pageable pageable = PageRequest.of(page -1, pageSize);
-
-        return ApiResponse.<RatePageResponse>builder()
-                .statusCode(200)
-                .content(rateService.get(pageable))
-                .build();
-    }
+//    @GetMapping
+//    public ApiResponse<RatePageResponse> get(
+//            @RequestParam(name = "page", defaultValue = "1") int page,
+//            @RequestParam(name = "pageSize", defaultValue = "6") int pageSize
+//    ) {
+//
+//        Pageable pageable = PageRequest.of(page -1, pageSize);
+//
+//        return ApiResponse.<RatePageResponse>builder()
+//                .statusCode(200)
+//                .content(rateService.get(pageable))
+//                .build();
+//    }
 
 
 

@@ -12,7 +12,8 @@ import org.mapstruct.Mappings;
 public interface RateMapper {
 
     @Mappings({
-            @Mapping(target = "user", ignore = true)
+            @Mapping(target = "user", ignore = true),
+            @Mapping(target = "rateStar", source = "rateStar")
     })
     public RateResponse toResponse(Rate rate);
 

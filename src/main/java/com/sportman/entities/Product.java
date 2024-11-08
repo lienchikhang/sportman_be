@@ -55,6 +55,9 @@ public class Product extends AbstractEntity implements Serializable {
     @Column(name = "league")
     ProductLeague league;
 
+    @Column(name = "sum_rate")
+    Double sumRate;
+
     @ManyToOne
     Season season;
 

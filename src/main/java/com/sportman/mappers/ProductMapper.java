@@ -40,7 +40,8 @@ public interface ProductMapper {
     @Mappings({
             @Mapping(target = "colors", ignore = true),
             @Mapping(target = "stocks", ignore = true),
-            @Mapping(target = "seasons", ignore = true)
+            @Mapping(target = "seasons", ignore = true),
+            @Mapping(target = "club", ignore = true)
     })
     public ProductGetDetailResponse toGetDetailResponse(Product product);
 }
